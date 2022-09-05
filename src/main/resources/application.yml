@@ -1,7 +1,7 @@
 com:
   hideyoshi:
-    frontEndPath: ${FRONTEND_PATH}}
-    frontendConnectionType: ${FRONTEND_CONNECTION_TYPE}}
+    frontEndPath: ${FRONTEND_PATH}
+    frontendConnectionType: ${FRONTEND_CONNECTION_TYPE}
     tokenSecret: ${TOKEN_SECRET}
     accessTokenDuration: ${ACCESS_TOKEN_DURATION}
     refreshTokenDuration: ${REFRESH_TOKEN_DURATION}

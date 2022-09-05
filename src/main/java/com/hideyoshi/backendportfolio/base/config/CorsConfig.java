@@ -13,7 +13,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${com.hideyoshi.frontendPath}")
+    @Value("${com.hideyoshi.frontEndPath}")
     private String FRONTEND_PATH;
 
     @Value("${com.hideyoshi.frontendConnectionType}")
