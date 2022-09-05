@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: db-table-model-client
+      author: vitor.h.n.batista@gmail.com
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: sqls/db-table-model-client.sql
+            relativeToChangelogFile: true
+            dbms: postgresql

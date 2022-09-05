@@ -1,0 +1,35 @@
+com:
+
+  hideyoshi:
+    frontendPath: localhost:4200
+    frontendConnectionType: unsecure
+    tokenSecret: secret
+    accessTokenDuration: 1800000
+    refreshTokenDuration: 1314900000
+
+    defaultUser:
+      fullName: "Vitor Hideyoshi"
+      email: "vitor.h.n.batista@gmail.com"
+      username: "YoshiUnfriendly"
+      password: "passwd"
+
+spring:
+
+  liquibase:
+    enabled: false
+
+  datasource:
+    jdbc:
+      url: jdbc:h2:mem:testdb
+      user: sa
+      password: sa
+      driver_class: org.h2.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+#        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true

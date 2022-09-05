@@ -1,0 +1,6 @@
+
+
+databaseChangeLog:
+
+  - include:
+      file: db/changelog/client/db.changelog-client.yml
