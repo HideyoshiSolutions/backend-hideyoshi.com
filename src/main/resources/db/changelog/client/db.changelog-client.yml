@@ -9,3 +9,13 @@ databaseChangeLog:
             path: sqls/db-table-model-client.sql
             relativeToChangelogFile: true
             dbms: postgresql
+
+  - changeSet:
+      id: adds-user-provider
+      author: vitor.h.n.batista@gmail.com
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: sqls/adds-user-provider.sql
+            relativeToChangelogFile: true
+            dbms: postgresql

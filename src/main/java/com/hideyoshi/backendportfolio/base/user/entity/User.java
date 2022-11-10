@@ -25,10 +25,10 @@ public class User {
     private Long id;
 
     @Column(
-        name = "full_name",
+        name = "name",
         nullable = false
     )
-    private String fullname;
+    private String name;
 
     @Column(
         name = "email",
@@ -51,6 +51,12 @@ public class User {
         nullable = false
     )
     private String password;
+
+    @Column(
+            name = "provider",
+            nullable = false
+    )
+    private String provider;
 
     @Column(
         name = "roles",

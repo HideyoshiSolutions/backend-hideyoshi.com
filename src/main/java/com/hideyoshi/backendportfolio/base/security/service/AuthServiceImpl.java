@@ -4,6 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMap;
+import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMapEnum;
+import com.hideyoshi.backendportfolio.base.user.entity.Provider;
+import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
@@ -16,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -23,10 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Log4j2
 @Service
@@ -66,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
                 .sign(algorithm);
 
         return new TokenDTO(accessToken, expirationDate);
+
     }
 
     @Override
@@ -160,16 +169,93 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserDTO signupUser(@Valid UserDTO user, HttpServletRequest request) {
 
+        user.setProvider(Provider.LOCAL);
+
+        return this.generateUserWithTokens(
+                this.userService.saveUser(user),
+                request
+        );
+
+    }
+
+    @Override
+    public UserDTO generateUserWithTokens(UserDTO user, HttpServletRequest request) {
+
         Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
 
-        UserDTO userSaved = this.userService.saveUser(user);
-        HashMap<String, TokenDTO> tokens = this.generateTokens(userSaved, algorithm, request);
+        HashMap<String, TokenDTO> tokens = this.generateTokens(user, algorithm, request);
 
         HttpSession httpSession = request.getSession();
-        UserDTO userAuthenticated = userSaved.toResponse(tokens.get("accessToken"), tokens.get("refreshToken"));
+        UserDTO userAuthenticated = user.toResponse(tokens.get("accessToken"), tokens.get("refreshToken"));
+
         httpSession.setAttribute("user", userAuthenticated);
 
         return userAuthenticated;
+    }
+
+    @Override
+    public UserDTO processOAuthPostLogin(@Valid UserDTO user, HttpServletRequest request) {
+
+        if (Objects.nonNull(user.getId())) {
+            this.userService.alterUser(user.getId(), user);
+        } else {
+            this.userService.saveUser(user);
+        }
+
+        return this.generateUserWithTokens(user, request);
+
+    }
+
+    @Override
+    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
+
+        UserDTO authenticatedUser = this.generateUserWithTokens(
+                user,
+                request
+        );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authenticatedUser);
+    }
+
+    public void loginOAuthUser(HttpServletRequest request,
+                        HttpServletResponse response,
+                        OAuth2User oauthUser) throws IOException {
+
+        String[] url = request.getRequestURL().toString().split("/");
+        String clientId = url[url.length-1];
+
+        OAuthMap oauthMap = null;
+        try {
+            oauthMap = (OAuthMap) OAuthMapEnum.byValue(clientId).getMap()
+                    .getDeclaredConstructor(OAuth2User.class).newInstance(oauthUser);
+        } catch (Exception e) {
+            throw new BadRequestException("No Such Provider");
+        }
+
+        UserDTO user = null;
+        try {
+            user = this.userService.getUser(oauthMap.getPrincipal());
+        } catch (BadRequestException e) {
+            user = UserDTO.builder()
+                    .name(oauthUser.getAttribute("name"))
+                    .username(oauthMap.getPrincipal())
+                    .email(oauthUser.getAttribute("email"))
+                    .roles(Arrays.asList(Role.USER))
+                    .provider(oauthMap.getProvider())
+                    .build();
+        }
+
+        UserDTO authenticatedUser = this.processOAuthPostLogin(
+                user,
+                request
+        );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authenticatedUser);
+
     }
 
 }

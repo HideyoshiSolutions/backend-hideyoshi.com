@@ -1,6 +1,7 @@
 package com.hideyoshi.backendportfolio.base.user.service;
 
 import com.hideyoshi.backendportfolio.base.security.service.AuthService;
+import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.entity.User;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
@@ -349,15 +350,15 @@ class UserServiceImplTest {
     }
 
     private UserDTO createUser() {
-        UserDTO userCreated = new UserDTO(
-                "Clark Kent",
-                "superman@gmail.com",
-                "Superman",
-                "password",
-                List.of(Role.USER)
-        );
-        userCreated.setId(1L);
-        return userCreated;
+        return UserDTO.builder()
+                .id(1L)
+                .name("Clark Kent")
+                .email("superman@gmail.com")
+                .username("Superman")
+                .password("password")
+                .provider(Provider.LOCAL)
+                .roles(List.of(Role.USER))
+                .build();
     }
 
 }

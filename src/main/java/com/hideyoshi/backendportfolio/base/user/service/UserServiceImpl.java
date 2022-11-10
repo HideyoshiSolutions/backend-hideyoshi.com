@@ -34,9 +34,13 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(String.format("User %s already exists. Try another UserName.", userOnDB.getUsername()));
         });
 
-        log.info(String.format("Saving to the database user of name: %s", user.getFullname()));
+        log.info(String.format("Saving to the database user of name: %s", user.getName()));
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (Objects.nonNull(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword("");
+        }
         UserDTO userSaved = new UserDTO(userRepo.save(user.toEntity()));
 
         if (!userSaved.getRoles().contains(Role.USER)) {
@@ -81,10 +85,10 @@ public class UserServiceImpl implements UserService {
             log.info(String.format("Adding to user %s the role %s",
                     userOnDB.getUsername(), newAuthority.getDescription()));
 
-            if (roles.add(newAuthority)) {
-                userOnDB.setRoles(roles);
-                this.alterUser(userOnDB.getId(), userOnDB);
-            }
+            roles.add(newAuthority);
+            userOnDB.setRoles(roles);
+
+            this.alterUser(userOnDB.getId(), userOnDB);
 
         }
 

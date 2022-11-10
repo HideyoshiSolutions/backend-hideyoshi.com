@@ -36,7 +36,7 @@ public class UserDTO implements UserDetails {
     private Long id;
 
     @NotEmpty
-    private String fullname;
+    private String name;
 
     @NotEmpty
     @ValidEmail
@@ -59,104 +59,82 @@ public class UserDTO implements UserDetails {
 
     private Provider provider;
 
-    public UserDTO(
-            String fullname,
-            String email,
-            String username,
-            String password
-    ) {
-        this.fullname = fullname;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.roles = List.of(Role.USER);
-    }
-
-    public UserDTO(
-            String fullname,
-            String email,
-            String username,
-            String password,
-            List<Role> roles
-    ) {
-        this.fullname = fullname;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.roles = roles;
-    }
-
     public UserDTO(User entity) {
         this.id = entity.getId();
-        this.fullname = entity.getFullname();
+        this.name = entity.getName();
         this.email = entity.getEmail();
         this.username = entity.getUsername();
         this.password = entity.getPassword();
+        this.provider = Provider.byValue(entity.getProvider());
         this.roles = entity.getRoles();
     }
 
     public User toEntity() {
         return new User(
                 this.id,
-                this.fullname,
+                this.name,
                 this.email,
                 this.username,
                 this.password,
+                this.provider.getName(),
                 Objects.nonNull(this.roles) ? this.roles.stream()
                         .map(role -> role.getDescription())
                         .collect(Collectors.joining("&")) : Role.USER.getDescription()
         );
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
+        return this.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getDescription()))
                 .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
 
     public UserDTO toResponse() {
         return UserDTO.builder()
-                .fullname(this.fullname)
+                .name(this.name)
                 .email(this.email)
                 .username(this.username)
+                .provider(this.provider)
                 .build();
     }
 
     public UserDTO toResponse(TokenDTO accessToken, TokenDTO refreshToken) {
         return UserDTO.builder()
                 .id(this.id)
-                .fullname(this.fullname)
+                .name(this.name)
                 .email(this.email)
                 .username(this.username)
+                .provider(this.provider)
                 .roles(this.roles)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
+
 }

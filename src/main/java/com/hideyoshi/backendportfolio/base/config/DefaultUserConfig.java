@@ -1,5 +1,6 @@
 package com.hideyoshi.backendportfolio.base.config;
 
+import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.repo.UserRepository;
@@ -30,10 +31,11 @@ public class DefaultUserConfig {
     CommandLineRunner run(UserService userService, UserRepository userRepo) {
         return args -> {
             UserDTO defaultUser = UserDTO.builder()
-                                    .fullname(ADMIN_NAME)
+                                    .name(ADMIN_NAME)
                                     .email(ADMIN_EMAIL)
                                     .username(ADMIN_USERNAME)
                                     .password(ADMIN_PASSWORD)
+                                    .provider(Provider.LOCAL)
                                     .roles(new ArrayList<>())
                                     .build();
             if (!userRepo.findByUsername(defaultUser.getUsername()).isPresent()) {
