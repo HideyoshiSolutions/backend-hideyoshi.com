@@ -10,15 +10,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
+import java.security.Provider;
 import java.util.List;
 
 @Log4j2
@@ -49,34 +53,6 @@ public class UserController {
         return ResponseEntity.created(uri).body(this.authService.signupUser(user, request));
     }
 
-    @PostMapping("/delete/{id}")
-    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        this.userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-//
-//    @PostMapping("/alter/{id}")
-//    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
-//    public ResponseEntity<Void> alterUser(@PathVariable("id") Long id, @RequestBody @Valid UserDTO user) {
-//        this.userService.alterUser(id, user);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
-//    @PostMapping("/alter/{id}/role/add")
-//    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
-//    public ResponseEntity<?> addRoleToUser(@PathVariable("id") Long id, @RequestBody RoleToUserDTO filter) {
-//        userService.addRoleToUser(id, filter.getRoleName());
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/alter/{id}/role/delete")
-//    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
-//    public ResponseEntity<?> deleteRoleToUser(@PathVariable("id") Long id, @RequestBody RoleToUserDTO filter) {
-//        userService.removeRoleFromUser(id, filter.getRoleName());
-//        return ResponseEntity.ok().build();
-//    }
-
     @PostMapping("/login/refresh")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
     public ResponseEntity<UserDTO> refreshAccessToken(
@@ -84,6 +60,20 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) {
         return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request, response));
+    }
+
+    @GetMapping("/login/callback")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
+    public void oauthCallback(HttpServletResponse response) throws IOException {
+        log.info("Teste");
+        response.sendRedirect("http://localhost:4200");
+    }
+
+    @PostMapping("/delete/{id}")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+        this.userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

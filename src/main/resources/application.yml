@@ -1,6 +1,6 @@
 com:
   hideyoshi:
-    frontEndPath: ${FRONTEND_PATH}
+    frontendPath: ${FRONTEND_PATH}
     frontendConnectionType: ${FRONTEND_CONNECTION_TYPE}
     tokenSecret: ${TOKEN_SECRET}
     accessTokenDuration: ${ACCESS_TOKEN_DURATION}
@@ -16,6 +16,26 @@ server:
   port: ${PORT}
 
 spring:
+
+  security:
+    oauth2:
+      client:
+        registration:
+
+          google:
+            clientId: ${GOOGLE_CLIENT_ID}
+            clientSecret: ${GOOGLE_CLIENT_SECRET}
+            redirectUri: ${GOOGLE_REDIRECT_URL}
+            scope:
+              - email
+              - profile
+
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            redirectUri: ${GITHUB_REDIRECT_URL}
+            scope:
+              - user
 
   datasource:
     url: jdbc:${DATABASE_URL}

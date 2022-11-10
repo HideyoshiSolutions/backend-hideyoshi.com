@@ -1,5 +1,6 @@
 package com.hideyoshi.backendportfolio.base.user.repo;
 
+import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.entity.User;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
@@ -58,13 +59,14 @@ class UserRepositoryTest {
     }
 
     private User createEntity() {
-        return new UserDTO(
-                "Clark Kent",
-                "superman@gmail.com",
-                "Superman",
-                "password",
-                List.of(Role.USER)
-        ).toEntity();
+        return UserDTO.builder()
+                .name("Clark Kent")
+                .email("superman@gmail.com")
+                .username("Superman")
+                .password("password")
+                .provider(Provider.LOCAL)
+                .roles(List.of(Role.USER))
+                .build().toEntity();
     }
 
 }
