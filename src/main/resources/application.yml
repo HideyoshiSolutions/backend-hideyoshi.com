@@ -13,6 +13,10 @@ com:
 
 
 server:
+  servlet:
+    session:
+      cookie:
+        same-site: lax
   port: ${PORT}
 
 spring:
