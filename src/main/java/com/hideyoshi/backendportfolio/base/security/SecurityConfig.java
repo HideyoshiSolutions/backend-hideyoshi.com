@@ -8,8 +8,10 @@ import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -84,9 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.oauth2Login()
             .authorizationEndpoint()
             .authorizationRequestRepository(this.oAuthRequestRepository)
-            .and().successHandler(this::successHandler)
-            .and().exceptionHandling()
-            .authenticationEntryPoint(this::authenticationEntryPoint);
+            .and().successHandler(this::successHandler);
     }
 
     private void successHandler(HttpServletRequest request,
@@ -101,12 +102,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 oauthUser
         );
 
-    }
-
-    private void authenticationEntryPoint(HttpServletRequest request,
-                                          HttpServletResponse response,
-                                          AuthenticationException authentication ) {
-        throw new AuthenticationInvalidException(authentication.getMessage());
     }
 
 
