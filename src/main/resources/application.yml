@@ -16,7 +16,7 @@ server:
   servlet:
     session:
       cookie:
-        same-site: lax
+        same-site: none
   port: ${PORT}
 
 spring:
