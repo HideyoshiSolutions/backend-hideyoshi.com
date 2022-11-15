@@ -18,9 +18,6 @@ public class CorsConfig {
     @Value("${com.hideyoshi.frontendPath}")
     private String FRONTEND_PATH;
 
-    @Value("${com.hideyoshi.frontendConnectionType}")
-    private String CONNECTION_TYPE;
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
