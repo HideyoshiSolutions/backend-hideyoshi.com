@@ -21,23 +21,15 @@ public class CorsConfig {
     @Value("${com.hideyoshi.frontendConnectionType}")
     private String CONNECTION_TYPE;
 
-    private final String HTTP = "http://";
-
-    private final String HTTPS = "https://";
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
-        String connectionProtocol = CONNECTION_TYPE.equals("secure")
-                ? HTTPS
-                : HTTP;
-
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(connectionProtocol + FRONTEND_PATH));
+        configuration.setAllowedOrigins(List.of(FRONTEND_PATH));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         configuration.setAllowCredentials(true);
 
