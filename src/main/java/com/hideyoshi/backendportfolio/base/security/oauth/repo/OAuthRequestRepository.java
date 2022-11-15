@@ -17,8 +17,6 @@ public class OAuthRequestRepository implements AuthorizationRequestRepository<OA
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
 
         String state = request.getParameter("state");
-        log.info(state);
-
         if (Objects.nonNull(state)) {
             return removeAuthorizationRequest(request);
         }
