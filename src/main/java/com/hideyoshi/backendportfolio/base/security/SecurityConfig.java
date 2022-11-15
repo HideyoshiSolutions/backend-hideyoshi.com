@@ -87,7 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.oauth2Login()
             .authorizationEndpoint()
             .authorizationRequestRepository(this.oAuthRequestRepository)
-            .and().successHandler(this::successHandler);
+            .and().successHandler(this::successHandler)
+            .failureHandler(this::failureHandler);
     }
 
     private void successHandler(HttpServletRequest request,
@@ -104,6 +105,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+    private void failureHandler(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException e) {
+        throw new AuthenticationInvalidException("Invalid Authentication Attempt.");
+    }
 
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
