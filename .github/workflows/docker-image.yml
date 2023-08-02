@@ -6,10 +6,7 @@ on:
       - 'main'
 
 jobs:
-
   docker:
-    
-    needs: run-tests
 
     runs-on: ubuntu-latest
     steps:
