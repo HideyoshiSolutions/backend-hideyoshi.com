@@ -8,9 +8,9 @@ public enum OAuthMapEnum {
 
     GITHUB(GithubOAuthMap.class, Provider.GITHUB);
 
-    private Class oAuthMap;
+    private final Class oAuthMap;
 
-    private Provider provider;
+    private final Provider provider;
 
     private OAuthMapEnum(Class oAuthMap, Provider provider) {
         this.oAuthMap = oAuthMap;
