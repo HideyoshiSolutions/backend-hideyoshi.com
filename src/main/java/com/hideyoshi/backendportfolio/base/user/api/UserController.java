@@ -69,7 +69,7 @@ public class UserController {
         response.sendRedirect("http://localhost:4200");
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         this.userService.deleteUser(id);

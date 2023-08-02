@@ -27,7 +27,6 @@ public class OAuthRequestRepository implements AuthorizationRequestRepository<OA
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
 
         String state = authorizationRequest.getState();
-        log.info(state);
 
         request.getSession().setAttribute(
             String.format("state_%s", state),
