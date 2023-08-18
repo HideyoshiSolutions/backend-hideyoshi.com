@@ -4,25 +4,24 @@ import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import com.hideyoshi.backendportfolio.microservice.storageService.enums.FileTypeEnum;
+import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceDownloadResponse;
+import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceUploadResponse;
+import com.hideyoshi.backendportfolio.microservice.storageService.service.StorageService;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuard;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuardEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.net.URI;
-import java.security.Provider;
 import java.util.List;
 
 @Log4j2
@@ -35,6 +34,8 @@ public class UserController {
     private final UserService userService;
 
     private final AuthService authService;
+
+    private final StorageService storageService;
 
     @GetMapping
     @UserResourceGuard(accessType = UserResourceGuardEnum.ADMIN_USER)
@@ -62,18 +63,44 @@ public class UserController {
         return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request, response));
     }
 
-    @GetMapping("/login/callback")
-    @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public void oauthCallback(HttpServletResponse response) throws IOException {
-        log.info("Teste");
-        response.sendRedirect("http://localhost:4200");
-    }
-
     @DeleteMapping("/delete/{id}")
     @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         this.userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping("/profile-picture")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public StorageServiceUploadResponse addProfilePicture() {
+        UserDTO user = this.authService.getLoggedUser();
+        return this.storageService.getNewFileUrl(
+                user.getUsername(),
+                "profile",
+                FileTypeEnum.PNG
+        );
+    }
+
+    @GetMapping("/profile-picture")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public StorageServiceDownloadResponse getProfilePicture() {
+        UserDTO user = this.authService.getLoggedUser();
+        return this.storageService.getFileUrl(
+                user.getUsername(),
+                "profile"
+        );
+    }
+
+    @PostMapping("/profile-picture/proccess")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public void processProfilePicture() {
+        UserDTO user = this.authService.getLoggedUser();
+        this.storageService.processFile(
+                user.getUsername(),
+                "profile"
+        );
+    }
+
+
 
 }

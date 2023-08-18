@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -256,6 +257,11 @@ public class AuthServiceImpl implements AuthService {
         new ObjectMapper()
                 .writeValue(response.getOutputStream(), authenticatedUser);
 
+    }
+
+    public UserDTO getLoggedUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.getUser(username);
     }
 
 }

@@ -34,4 +34,6 @@ public interface AuthService {
 
     void loginOAuthUser(HttpServletRequest request, HttpServletResponse response, OAuth2User user) throws IOException;
 
+    UserDTO getLoggedUser();
+
 }
