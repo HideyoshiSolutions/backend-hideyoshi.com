@@ -72,12 +72,14 @@ public class UserController {
 
     @PostMapping("/profile-picture")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public StorageServiceUploadResponse addProfilePicture() {
+    public StorageServiceUploadResponse addProfilePicture(
+            @RequestParam FileTypeEnum fileType
+    ) {
         UserDTO user = this.authService.getLoggedUser();
         return this.storageService.getNewFileUrl(
                 user.getUsername(),
                 "profile",
-                FileTypeEnum.PNG
+                fileType
         );
     }
 
@@ -100,7 +102,5 @@ public class UserController {
                 "profile"
         );
     }
-
-
 
 }
