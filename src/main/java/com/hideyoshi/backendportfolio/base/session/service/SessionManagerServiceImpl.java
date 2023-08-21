@@ -17,14 +17,16 @@ public class SessionManagerServiceImpl implements SessionManagerService {
     @Override
     public UserDTO validateSession(HttpSession session) {
 
-        UserDTO sessionObjects = (UserDTO) session.getAttribute("user");
+        UserDTO sessionObject = (UserDTO) session.getAttribute("user");
 
-        if (Objects.nonNull(sessionObjects)) {
-            return this.userService.getUser(sessionObjects.getUsername())
-                    .toResponse(sessionObjects.getAccessToken(), sessionObjects.getRefreshToken());
+        if (Objects.nonNull(sessionObject)) {
+            sessionObject = sessionObject.toResponse(
+                    sessionObject.getAccessToken(),
+                    sessionObject.getRefreshToken()
+            );
         }
 
-        return null;
+        return sessionObject;
     }
 
     @Override

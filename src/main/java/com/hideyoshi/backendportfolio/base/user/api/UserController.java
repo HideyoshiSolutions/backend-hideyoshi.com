@@ -83,16 +83,6 @@ public class UserController {
         );
     }
 
-    @GetMapping("/profile-picture")
-    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public StorageServiceDownloadResponse getProfilePicture() {
-        UserDTO user = this.authService.getLoggedUser();
-        return this.storageService.getFileUrl(
-                user.getUsername(),
-                "profile"
-        );
-    }
-
     @PostMapping("/profile-picture/proccess")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
     public void processProfilePicture() {

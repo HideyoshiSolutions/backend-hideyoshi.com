@@ -6,12 +6,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMap;
-import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMapEnum;
+import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMapper;
 import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import com.hideyoshi.backendportfolio.microservice.storageService.service.StorageService;
 import com.hideyoshi.backendportfolio.util.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -55,6 +56,8 @@ public class AuthServiceImpl implements AuthService {
     private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
 
     private final UserService userService;
+
+    private final StorageService storageService;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
@@ -172,11 +175,36 @@ public class AuthServiceImpl implements AuthService {
 
         user.setProvider(Provider.LOCAL);
 
-        return this.generateUserWithTokens(
+        UserDTO authenticatedUser = this.generateUserWithTokens(
                 this.userService.saveUser(user),
                 request
         );
 
+        authenticatedUser.setProfilePictureUrl(
+                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
+                        .getPresignedUrl()
+        );
+
+        return authenticatedUser;
+
+    }
+
+    @Override
+    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
+
+        UserDTO authenticatedUser = this.generateUserWithTokens(
+                user,
+                request
+        );
+
+        authenticatedUser.setProfilePictureUrl(
+                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
+                        .getPresignedUrl()
+        );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authenticatedUser);
     }
 
     @Override
@@ -204,20 +232,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return this.generateUserWithTokens(user, request);
-
-    }
-
-    @Override
-    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
-
-        UserDTO authenticatedUser = this.generateUserWithTokens(
-                user,
-                request
-        );
-
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), authenticatedUser);
     }
 
     public void loginOAuthUser(HttpServletRequest request,
@@ -229,7 +243,7 @@ public class AuthServiceImpl implements AuthService {
 
         OAuthMap oauthMap = null;
         try {
-            oauthMap = (OAuthMap) OAuthMapEnum.byValue(clientId).getMap()
+            oauthMap = (OAuthMap) OAuthMapper.byValue(clientId).getMap()
                     .getDeclaredConstructor(OAuth2User.class).newInstance(oauthUser);
         } catch (Exception e) {
             throw new BadRequestException("No Such Provider");
@@ -238,6 +252,7 @@ public class AuthServiceImpl implements AuthService {
         UserDTO user = null;
         try {
             user = this.userService.getUser(oauthMap.getPrincipal());
+            user.setProfilePictureUrl(oauthMap.getProfilePicture());
         } catch (BadRequestException e) {
             user = UserDTO.builder()
                     .name(oauthUser.getAttribute("name"))
@@ -245,6 +260,7 @@ public class AuthServiceImpl implements AuthService {
                     .email(oauthUser.getAttribute("email"))
                     .roles(Arrays.asList(Role.USER))
                     .provider(oauthMap.getProvider())
+                    .profilePictureUrl(oauthMap.getProfilePicture())
                     .build();
         }
 
