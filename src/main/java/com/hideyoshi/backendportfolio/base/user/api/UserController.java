@@ -1,5 +1,6 @@
 package com.hideyoshi.backendportfolio.base.user.api;
 
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
@@ -45,7 +46,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public ResponseEntity<UserDTO> signupUser(@RequestBody @Valid UserDTO user, HttpServletRequest request) {
+    public ResponseEntity<AuthDTO> signupUser(@RequestBody @Valid UserDTO user, HttpServletRequest request) {
         URI uri = URI.create(
                 ServletUriComponentsBuilder
                         .fromCurrentContextPath()
@@ -56,7 +57,7 @@ public class UserController {
 
     @PostMapping("/login/refresh")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public ResponseEntity<UserDTO> refreshAccessToken(
+    public ResponseEntity<AuthDTO> refreshAccessToken(
             @RequestBody @Valid TokenDTO refreshToken,
             HttpServletRequest request,
             HttpServletResponse response) {

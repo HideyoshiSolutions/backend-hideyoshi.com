@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMap;
 import com.hideyoshi.backendportfolio.base.security.oauth.mapper.OAuthMapper;
 import com.hideyoshi.backendportfolio.base.user.entity.Provider;
@@ -102,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
         TokenDTO accessToken = generateAccessToken(user, algorithm, request);
         TokenDTO refreshToken = generateRefreshToken(user, algorithm, request);
 
-        HashMap<String,TokenDTO> tokens = new HashMap<>();
+        HashMap<String, TokenDTO> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
 
@@ -112,54 +113,81 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UsernamePasswordAuthenticationToken verifyAccessToken(String authorizationHeader) {
 
-        if (authorizationHeader.startsWith(AUTHORIZATION_TYPE_STRING)) {
-
-            String authorizationToken = authorizationHeader.substring(AUTHORIZATION_TYPE_STRING.length());
-            Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
-
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            DecodedJWT decodedJWT = verifier.verify(authorizationToken);
-
-            String username = decodedJWT.getSubject();
-            String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
-
-            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            stream(roles).forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority(role));
-            });
-            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        if (!authorizationHeader.startsWith(AUTHORIZATION_TYPE_STRING)) {
+            return null;
         }
-        return null;
+
+        String authorizationToken = authorizationHeader.substring(AUTHORIZATION_TYPE_STRING.length());
+        Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
+
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(authorizationToken);
+
+        String username = decodedJWT.getSubject();
+        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        stream(roles).forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role));
+        });
+
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
     @Override
-    public UserDTO refreshAccessToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+    public AuthDTO generateUserWithTokens(UserDTO user, HttpServletRequest request) {
 
-        if (Objects.nonNull(refreshToken)) {
+        Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
 
-            Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
+        HashMap<String, TokenDTO> tokens = this.generateTokens(user, algorithm, request);
 
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            DecodedJWT decodedJWT = verifier.verify(refreshToken);
+        HttpSession httpSession = request.getSession();
+        AuthDTO authObject = new AuthDTO(user, tokens.get("accessToken"), tokens.get("refreshToken"));
 
-            UserDTO user = this.userService.getUser(decodedJWT.getSubject());
+        httpSession.setAttribute("user", authObject);
 
-            if (Objects.nonNull(user)) {
+        return authObject;
+    }
 
-                HttpSession httpSession = request.getSession();
-                UserDTO authenticatedUser = user.toResponse(
-                        this.generateAccessToken(user, algorithm, request),
-                        new TokenDTO(
-                                refreshToken,
-                                decodedJWT.getExpiresAt()
-                        )
-                );
-                httpSession.setAttribute("user", authenticatedUser);
+    @Override
+    public AuthDTO signupUser(@Valid UserDTO user, HttpServletRequest request) {
 
-                return authenticatedUser;
-            }
+        user.setProvider(Provider.LOCAL);
 
-        } else {
+        UserDTO authenticatedUser = this.userService.saveUser(user);
+        authenticatedUser.setProfilePictureUrl(
+                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
+                        .getPresignedUrl()
+        );
+
+        return this.generateUserWithTokens(
+                authenticatedUser,
+                request
+        );
+
+    }
+
+    @Override
+    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
+        user.setProfilePictureUrl(
+                this.storageService.getFileUrl(user.getUsername(), "profile")
+                        .getPresignedUrl()
+        );
+
+        AuthDTO authObject = this.generateUserWithTokens(
+                user,
+                request
+        );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authObject);
+    }
+
+    @Override
+    public AuthDTO refreshAccessToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+
+        if (!Objects.nonNull(refreshToken)) {
             resolver.resolveException(
                     request,
                     response,
@@ -167,63 +195,35 @@ public class AuthServiceImpl implements AuthService {
                     new BadRequestException("Invalid Refresh Token. Please authenticate first.")
             );
         }
-        return null;
-    }
 
-    @Override
-    public UserDTO signupUser(@Valid UserDTO user, HttpServletRequest request) {
+        Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
 
-        user.setProvider(Provider.LOCAL);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(refreshToken);
 
-        UserDTO authenticatedUser = this.generateUserWithTokens(
-                this.userService.saveUser(user),
-                request
-        );
-
-        authenticatedUser.setProfilePictureUrl(
-                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
+        UserDTO user = this.userService.getUser(decodedJWT.getSubject());
+        user.setProfilePictureUrl(
+                this.storageService.getFileUrl(user.getUsername(), "profile")
                         .getPresignedUrl()
         );
+
+        HttpSession httpSession = request.getSession();
+        AuthDTO authenticatedUser = new AuthDTO(
+                user,
+                this.generateAccessToken(user, algorithm, request),
+                new TokenDTO(
+                        refreshToken,
+                        decodedJWT.getExpiresAt()
+                )
+        );
+        httpSession.setAttribute("user", authenticatedUser);
 
         return authenticatedUser;
 
     }
 
     @Override
-    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
-
-        UserDTO authenticatedUser = this.generateUserWithTokens(
-                user,
-                request
-        );
-
-        authenticatedUser.setProfilePictureUrl(
-                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
-                        .getPresignedUrl()
-        );
-
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), authenticatedUser);
-    }
-
-    @Override
-    public UserDTO generateUserWithTokens(UserDTO user, HttpServletRequest request) {
-
-        Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET.getBytes());
-
-        HashMap<String, TokenDTO> tokens = this.generateTokens(user, algorithm, request);
-
-        HttpSession httpSession = request.getSession();
-        UserDTO userAuthenticated = user.toResponse(tokens.get("accessToken"), tokens.get("refreshToken"));
-
-        httpSession.setAttribute("user", userAuthenticated);
-
-        return userAuthenticated;
-    }
-
-    @Override
-    public UserDTO processOAuthPostLogin(@Valid UserDTO user, HttpServletRequest request) {
+    public AuthDTO processOAuthPostLogin(@Valid UserDTO user, HttpServletRequest request) {
 
         if (Objects.nonNull(user.getId())) {
             this.userService.alterUser(user.getId(), user);
@@ -234,25 +234,49 @@ public class AuthServiceImpl implements AuthService {
         return this.generateUserWithTokens(user, request);
     }
 
+    @Override
     public void loginOAuthUser(HttpServletRequest request,
-                        HttpServletResponse response,
-                        OAuth2User oauthUser) throws IOException {
+                               HttpServletResponse response,
+                               OAuth2User oauthUser) throws IOException {
 
-        String[] url = request.getRequestURL().toString().split("/");
-        String clientId = url[url.length-1];
+        String clientId = this.getClientFromUrl(request.getRequestURL().toString());
 
-        OAuthMap oauthMap = null;
+        OAuthMap oauthMap = this.generateOAuthMap(clientId, oauthUser);
+
+        AuthDTO authObject = this.processOAuthPostLogin(
+                this.generateUserFromAuthUser(oauthMap, oauthUser),
+                request
+        );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authObject);
+    }
+
+    @Override
+    public UserDTO getLoggedUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.getUser(username);
+    }
+
+    private String getClientFromUrl(String url) {
+        String[] urlPartition = url.split("/");
+        return urlPartition[urlPartition.length - 1];
+    }
+
+    private OAuthMap generateOAuthMap(String clientId, OAuth2User oauthUser) {
         try {
-            oauthMap = (OAuthMap) OAuthMapper.byValue(clientId).getMap()
+            return (OAuthMap) OAuthMapper.byValue(clientId).getMap()
                     .getDeclaredConstructor(OAuth2User.class).newInstance(oauthUser);
         } catch (Exception e) {
-            throw new BadRequestException("No Such Provider");
+            throw new BadRequestException("Unsupported OAuth Client.");
         }
+    }
 
+    private UserDTO generateUserFromAuthUser(OAuthMap oauthMap, OAuth2User oauthUser) {
         UserDTO user = null;
         try {
             user = this.userService.getUser(oauthMap.getPrincipal());
-            user.setProfilePictureUrl(oauthMap.getProfilePicture());
         } catch (BadRequestException e) {
             user = UserDTO.builder()
                     .name(oauthUser.getAttribute("name"))
@@ -260,24 +284,11 @@ public class AuthServiceImpl implements AuthService {
                     .email(oauthUser.getAttribute("email"))
                     .roles(Arrays.asList(Role.USER))
                     .provider(oauthMap.getProvider())
-                    .profilePictureUrl(oauthMap.getProfilePicture())
                     .build();
         }
+        user.setProfilePictureUrl(oauthMap.getProfilePicture());
 
-        UserDTO authenticatedUser = this.processOAuthPostLogin(
-                user,
-                request
-        );
-
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), authenticatedUser);
-
-    }
-
-    public UserDTO getLoggedUser() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userService.getUser(username);
+        return user;
     }
 
 }

@@ -55,10 +55,6 @@ public class UserDTO implements UserDetails {
 
     private String profilePictureUrl;
 
-    private TokenDTO accessToken;
-
-    private TokenDTO refreshToken;
-
     private Provider provider;
 
     public UserDTO(User entity) {
@@ -119,25 +115,12 @@ public class UserDTO implements UserDetails {
 
     public UserDTO toResponse() {
         return UserDTO.builder()
-                .name(this.name)
-                .email(this.email)
-                .username(this.username)
-                .provider(this.provider)
-                .profilePictureUrl(this.profilePictureUrl)
-                .build();
-    }
-
-    public UserDTO toResponse(TokenDTO accessToken, TokenDTO refreshToken) {
-        return UserDTO.builder()
                 .id(this.id)
                 .name(this.name)
                 .email(this.email)
                 .username(this.username)
                 .provider(this.provider)
-                .roles(this.roles)
                 .profilePictureUrl(this.profilePictureUrl)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 

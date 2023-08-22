@@ -1,5 +1,6 @@
 package com.hideyoshi.backendportfolio.base.session.api;
 
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.session.service.SessionManagerService;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class SessionController {
     private final SessionManagerService sessionManagerService;
 
     @GetMapping(path = "/validate")
-    public ResponseEntity<UserDTO> validateCurrentSession(HttpSession session) {
+    public ResponseEntity<AuthDTO> validateCurrentSession(HttpSession session) {
         return ResponseEntity.ok(this.sessionManagerService.validateSession(session));
     }
 
