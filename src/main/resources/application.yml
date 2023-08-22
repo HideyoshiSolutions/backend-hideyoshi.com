@@ -10,6 +10,9 @@ com:
       username: ${DEFAULT_USER_USERNAME}
       password: ${DEFAULT_USER_PASSWORD}
 
+    microservice:
+      storageServicePath: ${STORAGE_SERVICE_PATH}
+
 
 server:
   servlet:

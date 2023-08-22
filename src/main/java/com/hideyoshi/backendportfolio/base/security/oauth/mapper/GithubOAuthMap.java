@@ -16,6 +16,11 @@ public class GithubOAuthMap implements OAuthMap {
     }
 
     @Override
+    public String getProfilePicture() {
+        return this.oAuth2User.getAttribute("avatar_url");
+    }
+
+    @Override
     public Provider getProvider() {
         return Provider.GITHUB;
     }

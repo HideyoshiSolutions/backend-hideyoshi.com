@@ -1,8 +1,9 @@
 package com.hideyoshi.backendportfolio.base.security.oauth.mapper;
 
 import com.hideyoshi.backendportfolio.base.user.entity.Provider;
+import lombok.Getter;
 
-public enum OAuthMapEnum {
+public enum OAuthMapper {
 
     GOOGLE(GoogleOAuthMap.class, Provider.GOOGLE),
 
@@ -10,9 +11,10 @@ public enum OAuthMapEnum {
 
     private final Class oAuthMap;
 
+    @Getter
     private final Provider provider;
 
-    private OAuthMapEnum(Class oAuthMap, Provider provider) {
+    private OAuthMapper(Class oAuthMap, Provider provider) {
         this.oAuthMap = oAuthMap;
         this.provider = provider;
     }
@@ -21,12 +23,8 @@ public enum OAuthMapEnum {
         return oAuthMap;
     }
 
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public static OAuthMapEnum byValue(String name) {
-        for (OAuthMapEnum e : values()) {
+    public static OAuthMapper byValue(String name) {
+        for (OAuthMapper e : values()) {
             if (e.getProvider().getName().equals(name)) {
                 return e;
             }

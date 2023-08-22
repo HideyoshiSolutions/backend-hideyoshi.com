@@ -1,4 +1,4 @@
-package com.hideyoshi.backendportfolio.base.security;
+package com.hideyoshi.backendportfolio.base.security.config;
 
 import com.hideyoshi.backendportfolio.base.config.RestAuthenticationEntryPointConfig;
 import com.hideyoshi.backendportfolio.base.security.filter.CustomAuthenticationFilter;

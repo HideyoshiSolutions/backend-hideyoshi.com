@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
+@Getter
 public enum UserResourceGuardEnum {
 
     USER("user") {
@@ -63,10 +65,6 @@ public enum UserResourceGuardEnum {
             UserService userService,
             ObjectMapper objectMapper,
             HttpServletRequest request);
-
-    public String getAccessType() {
-        return this.accessType;
-    }
 
     public static UserResourceGuardEnum byValue(String accessType) {
         for (UserResourceGuardEnum o : values()) {
