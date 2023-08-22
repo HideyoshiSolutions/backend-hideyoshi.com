@@ -40,8 +40,6 @@ class UserServiceImplTest {
 
     private PasswordEncoder passwordEncoder;
 
-    private AuthService authService;
-
 
     @BeforeEach
     void setUp() {
