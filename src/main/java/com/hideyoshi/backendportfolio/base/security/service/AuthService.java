@@ -1,6 +1,7 @@
 package com.hideyoshi.backendportfolio.base.security.service;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,16 +23,18 @@ public interface AuthService {
 
     UsernamePasswordAuthenticationToken verifyAccessToken(String authorizationHeader);
 
-    UserDTO refreshAccessToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
+    AuthDTO refreshAccessToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
 
-    UserDTO signupUser(@Valid UserDTO user, HttpServletRequest request);
+    AuthDTO signupUser(@Valid UserDTO user, HttpServletRequest request);
 
-    UserDTO generateUserWithTokens(UserDTO user, HttpServletRequest request);
+    AuthDTO generateUserWithTokens(UserDTO user, HttpServletRequest request);
 
-    UserDTO processOAuthPostLogin(@Valid UserDTO user, HttpServletRequest request);
+    AuthDTO processOAuthPostLogin(@Valid UserDTO user, HttpServletRequest request);
 
     void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException;
 
     void loginOAuthUser(HttpServletRequest request, HttpServletResponse response, OAuth2User user) throws IOException;
+
+    UserDTO getLoggedUser();
 
 }

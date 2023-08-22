@@ -7,6 +7,8 @@ public interface OAuthMap {
 
     String getPrincipal();
 
+    String getProfilePicture();
+
     Provider getProvider();
 
 }
