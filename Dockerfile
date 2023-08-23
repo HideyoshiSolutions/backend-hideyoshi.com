@@ -9,7 +9,7 @@ RUN mvn -Dmaven.test.skip -f /home/app/pom.xml clean package
 #
 # Package stage
 #
-FROM openjdk:17-jdk
+FROM openjdk:17-jdk-slim-buster
 
 COPY --from=build /home/app/target/*.jar app.jar
 COPY src/main/resources/* credentials/
