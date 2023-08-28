@@ -64,8 +64,16 @@ public class UserController {
         return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request, response));
     }
 
+    @DeleteMapping("/delete")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public ResponseEntity<Void> deleteMyUser() {
+        UserDTO loggedUser = this.authService.getLoggedUser();
+        this.userService.deleteUser(loggedUser.getId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @DeleteMapping("/delete/{id}")
-    @UserResourceGuard(accessType = UserResourceGuardEnum.SAME_USER)
+    @UserResourceGuard(accessType = UserResourceGuardEnum.ADMIN_USER)
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         this.userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
