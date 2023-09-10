@@ -6,7 +6,6 @@ import com.hideyoshi.backendportfolio.base.user.model.TokenDTO;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
 import com.hideyoshi.backendportfolio.microservice.storageService.enums.FileTypeEnum;
-import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceDownloadResponse;
 import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceUploadResponse;
 import com.hideyoshi.backendportfolio.microservice.storageService.service.StorageService;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuard;
@@ -68,14 +67,21 @@ public class UserController {
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
     public ResponseEntity<Void> deleteMyUser() {
         UserDTO loggedUser = this.authService.getLoggedUser();
+
         this.userService.deleteUser(loggedUser.getId());
+        this.storageService.deleteFile(loggedUser.getUsername(), "profile");
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{id}")
     @UserResourceGuard(accessType = UserResourceGuardEnum.ADMIN_USER)
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        this.userService.deleteUser(id);
+        UserDTO user = this.userService.getUser(id);
+
+        this.userService.deleteUser(user.getId());
+        this.storageService.deleteFile(user.getUsername(), "profile");
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -89,6 +95,16 @@ public class UserController {
                 user.getUsername(),
                 "profile",
                 fileType
+        );
+    }
+
+    @DeleteMapping("/profile-picture")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public void deleteProfilePicture() {
+        UserDTO user = this.authService.getLoggedUser();
+        this.storageService.deleteFile(
+                user.getUsername(),
+                "profile"
         );
     }
 
