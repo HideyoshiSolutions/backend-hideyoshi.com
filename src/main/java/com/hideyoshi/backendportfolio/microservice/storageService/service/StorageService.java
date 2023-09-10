@@ -8,19 +8,14 @@ import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageS
 import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceUploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Log4j2
 @Service
@@ -67,7 +57,7 @@ public class StorageService {
             throw new RuntimeException(e);
         }
 
-        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/new_file_url"));
+        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/file"));
         request.setHeader("Content-Type", "application/json");
 
         try {
@@ -95,7 +85,7 @@ public class StorageService {
     public StorageServiceDownloadResponse getFileUrl(String username, String filePostfix) {
         URI uri = null;
         try {
-            uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file_url")
+            uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
                     .addParameter(PARAMETER_USERNAME, username)
                     .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
                     .build();
@@ -122,6 +112,35 @@ public class StorageService {
         }
     }
 
+    public void deleteFile(String username, String filePostfix) {
+        URI uri = null;
+        try {
+            uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
+                    .addParameter(PARAMETER_USERNAME, username)
+                    .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpDelete request = new HttpDelete(uri);
+        request.setHeader("Content-Type", "application/json");
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setRedirectStrategy(new LaxRedirectStrategy()).build();
+
+        try {
+            httpClient.execute(
+                    request,
+                    response -> {
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void processFile(String username, String filePostfix) {
         HashMap<String, String> values = new HashMap<>() {{
             put(PARAMETER_USERNAME, username);
@@ -138,7 +157,7 @@ public class StorageService {
             throw new RuntimeException(e);
         }
 
-        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/process_file"));
+        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/file/process"));
         request.setHeader("Content-Type", "application/json");
 
         try {
@@ -152,11 +171,11 @@ public class StorageService {
 
         try {
             httpClient.execute(
-                request,
-                response -> {
-                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                    return objectMapper.readValue(responseString, StorageServiceUploadResponse.class);
-                }
+                    request,
+                    response -> {
+                        String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+                        return objectMapper.readValue(responseString, StorageServiceUploadResponse.class);
+                    }
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
