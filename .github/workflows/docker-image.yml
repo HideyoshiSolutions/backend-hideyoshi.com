@@ -39,4 +39,4 @@ jobs:
           curl -X POST https://api.github.com/repos/HideyoshiNakazone/infra-hideyoshi.com/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACTIONS_KEY }} \
-          --data '{"event_type": "refresh-deployments", "client_payload": { "repository": "backend-deployment" }}'
+          --data '{"event_type": "refresh-deployments", "client_payload": { "deployments": "backend-deployment" }}'
