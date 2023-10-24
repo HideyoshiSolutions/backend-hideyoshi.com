@@ -155,9 +155,10 @@ public class AuthServiceImpl implements AuthService {
         user.setProvider(Provider.LOCAL);
 
         UserDTO authenticatedUser = this.userService.saveUser(user);
-        authenticatedUser.setProfilePictureUrl(
-                this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile")
-                        .getPresignedUrl()
+
+        var profilePicture = this.storageService.getFileUrl(authenticatedUser.getUsername(), "profile");
+        profilePicture.ifPresent(
+                storageServiceDownloadResponse -> authenticatedUser.setProfilePictureUrl(storageServiceDownloadResponse.getPresignedUrl())
         );
 
         return this.generateUserWithTokens(
@@ -169,9 +170,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
-        user.setProfilePictureUrl(
-                this.storageService.getFileUrl(user.getUsername(), "profile")
-                        .getPresignedUrl()
+        var profilePicture = this.storageService.getFileUrl(user.getUsername(), "profile");
+        profilePicture.ifPresent(
+                storageServiceDownloadResponse -> user.setProfilePictureUrl(storageServiceDownloadResponse.getPresignedUrl())
         );
 
         AuthDTO authObject = this.generateUserWithTokens(
@@ -202,9 +203,10 @@ public class AuthServiceImpl implements AuthService {
         DecodedJWT decodedJWT = verifier.verify(refreshToken);
 
         UserDTO user = this.userService.getUser(decodedJWT.getSubject());
-        user.setProfilePictureUrl(
-                this.storageService.getFileUrl(user.getUsername(), "profile")
-                        .getPresignedUrl()
+
+        var profilePicture = this.storageService.getFileUrl(user.getUsername(), "profile");
+        profilePicture.ifPresent(
+                storageServiceDownloadResponse -> user.setProfilePictureUrl(storageServiceDownloadResponse.getPresignedUrl())
         );
 
         HttpSession httpSession = request.getSession();
