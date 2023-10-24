@@ -8,6 +8,7 @@ import com.hideyoshi.backendportfolio.base.user.service.UserService;
 import com.hideyoshi.backendportfolio.microservice.storageService.enums.FileTypeEnum;
 import com.hideyoshi.backendportfolio.microservice.storageService.model.StorageServiceUploadResponse;
 import com.hideyoshi.backendportfolio.microservice.storageService.service.StorageService;
+import com.hideyoshi.backendportfolio.util.exception.BadRequestException;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuard;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuardEnum;
 import lombok.RequiredArgsConstructor;
@@ -95,7 +96,7 @@ public class UserController {
                 user.getUsername(),
                 "profile",
                 fileType
-        );
+        ).orElseThrow(() -> new BadRequestException("File not found"));
     }
 
     @DeleteMapping("/profile-picture")

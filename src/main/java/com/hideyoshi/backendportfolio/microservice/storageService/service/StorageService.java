@@ -1,6 +1,7 @@
 package com.hideyoshi.backendportfolio.microservice.storageService.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.microservice.storageService.config.StorageServiceConfig;
 import com.hideyoshi.backendportfolio.microservice.storageService.enums.FileTypeEnum;
@@ -24,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -40,49 +42,28 @@ public class StorageService {
 
     private final String PARAMETER_FILE_TYPE = "file_type";
 
-    private final String PARAMETER_KEY_STRING = "string_url";
-
-    public StorageServiceUploadResponse getNewFileUrl(String username, String filePostfix, FileTypeEnum fileTypeEnum) {
+    public Optional<StorageServiceUploadResponse> getNewFileUrl(String username, String filePostfix, FileTypeEnum fileTypeEnum) {
         HashMap<String, String> values = new HashMap<>() {{
             put(PARAMETER_USERNAME, username);
             put(PARAMETER_FILE_POSTFIX, filePostfix);
             put(PARAMETER_FILE_TYPE, fileTypeEnum.getFileExtension());
         }};
 
-        String requestBody = null;
+        URI uri = URI.create(storageServiceConfig.getFileServicePath() + "/file");
+        String requestBody = this.writeToRequestBody(values);
+
+        StorageServiceUploadResponse uploadResponse = null;
         try {
-            requestBody = objectMapper
-                    .writeValueAsString(values);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/file"));
-        request.setHeader("Content-Type", "application/json");
-
-        try {
-            request.setEntity(new ByteArrayEntity(requestBody.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setRedirectStrategy(new LaxRedirectStrategy()).build();
-
-        try {
-            return httpClient.execute(
-                    request,
-                    response -> {
-                        String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                        return objectMapper.readValue(responseString, StorageServiceUploadResponse.class);
-                    }
-            );
+            var response = this.postRequest(uri, requestBody);
+            uploadResponse = objectMapper.readValue(response, StorageServiceUploadResponse.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("File not found: " + username + "/" + filePostfix);
         }
+
+        return Optional.ofNullable(uploadResponse);
     }
 
-    public StorageServiceDownloadResponse getFileUrl(String username, String filePostfix) {
+    public Optional<StorageServiceDownloadResponse> getFileUrl(String username, String filePostfix) {
         URI uri = null;
         try {
             uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
@@ -90,26 +71,20 @@ public class StorageService {
                     .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
                     .build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            log.warn("Invalid File: " + username + "/" + filePostfix);
+            return Optional.empty();
         }
 
-        HttpGet request = new HttpGet(uri);
-        request.setHeader("Content-Type", "application/json");
 
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setRedirectStrategy(new LaxRedirectStrategy()).build();
-
+        StorageServiceDownloadResponse downloadResponse = null;
         try {
-            return httpClient.execute(
-                    request,
-                    response -> {
-                        String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                        return objectMapper.readValue(responseString, StorageServiceDownloadResponse.class);
-                    }
-            );
+            var responseString = this.getRequest(uri);
+            downloadResponse = objectMapper.readValue(responseString, StorageServiceDownloadResponse.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("File not found: " + username + "/" + filePostfix);
         }
+
+        return Optional.ofNullable(downloadResponse);
     }
 
     public void deleteFile(String username, String filePostfix) {
@@ -120,24 +95,13 @@ public class StorageService {
                     .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
                     .build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            log.warn("File not found: " + username + "/" + filePostfix);
         }
 
-        HttpDelete request = new HttpDelete(uri);
-        request.setHeader("Content-Type", "application/json");
-
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setRedirectStrategy(new LaxRedirectStrategy()).build();
-
         try {
-            httpClient.execute(
-                    request,
-                    response -> {
-                        return null;
-                    }
-            );
+            this.deleteRequest(uri);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("File not found: " + username + "/" + filePostfix);
         }
     }
 
@@ -147,17 +111,31 @@ public class StorageService {
             put(PARAMETER_FILE_POSTFIX, filePostfix);
         }};
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        URI uri = URI.create(storageServiceConfig.getFileServicePath() + "/file/process");
+        String requestBody = this.writeToRequestBody(values);
 
-        String requestBody = null;
         try {
-            requestBody = objectMapper
-                    .writeValueAsString(values);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            this.postRequest(uri, requestBody);
+        } catch (IOException e) {
+            log.warn("File not found: " + username + "/" + filePostfix);
         }
+    }
 
-        HttpPost request = new HttpPost(URI.create(storageServiceConfig.getFileServicePath() + "/file/process"));
+    private String getRequest(URI requestURI) throws IOException {
+        HttpGet request = new HttpGet(requestURI);
+        request.setHeader("Content-Type", "application/json");
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setRedirectStrategy(new LaxRedirectStrategy()).build();
+
+        return httpClient.execute(
+                request,
+                response -> EntityUtils.toString(response.getEntity(), "UTF-8")
+        );
+    }
+
+    private String postRequest(URI requestURI, String requestBody) throws IOException {
+        HttpPost request = new HttpPost(requestURI);
         request.setHeader("Content-Type", "application/json");
 
         try {
@@ -169,17 +147,36 @@ public class StorageService {
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy()).build();
 
+        return httpClient.execute(
+                request,
+                response -> EntityUtils.toString(response.getEntity(), "UTF-8")
+        );
+    }
+
+    private void deleteRequest(URI requestURI) throws IOException {
+        HttpDelete request = new HttpDelete(requestURI);
+        request.setHeader("Content-Type", "application/json");
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setRedirectStrategy(new LaxRedirectStrategy()).build();
+
+        httpClient.execute(
+                request,
+                response -> {
+                    return null;
+                }
+        );
+    }
+
+    private String writeToRequestBody(HashMap<String, String> values) {
+        String requestBody = null;
         try {
-            httpClient.execute(
-                    request,
-                    response -> {
-                        String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                        return objectMapper.readValue(responseString, StorageServiceUploadResponse.class);
-                    }
-            );
-        } catch (IOException e) {
+            requestBody = objectMapper
+                    .writeValueAsString(values);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        return requestBody;
     }
 
 }
