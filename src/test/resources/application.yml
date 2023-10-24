@@ -13,6 +13,9 @@ com:
       username: "YoshiUnfriendly"
       password: "passwd"
 
+    microservice:
+      storageServicePath: undertest
+
 spring:
 
   liquibase:
