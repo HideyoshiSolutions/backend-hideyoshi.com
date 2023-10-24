@@ -32,7 +32,6 @@ import static org.mockito.Mockito.verify;
 @DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserServiceImplTest {
 
-    @InjectMocks
     private UserServiceImpl underTest;
 
     @Mock

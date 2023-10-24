@@ -2,12 +2,10 @@ package com.hideyoshi.backendportfolio.microservice.storageService.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class StorageServiceUploadResponse {
 

@@ -121,7 +121,7 @@ public class StorageService {
         }
     }
 
-    private String getRequest(URI requestURI) throws IOException {
+    protected String getRequest(URI requestURI) throws IOException {
         HttpGet request = new HttpGet(requestURI);
         request.setHeader("Content-Type", "application/json");
 
@@ -134,7 +134,7 @@ public class StorageService {
         );
     }
 
-    private String postRequest(URI requestURI, String requestBody) throws IOException {
+    protected String postRequest(URI requestURI, String requestBody) throws IOException {
         HttpPost request = new HttpPost(requestURI);
         request.setHeader("Content-Type", "application/json");
 
@@ -153,7 +153,7 @@ public class StorageService {
         );
     }
 
-    private void deleteRequest(URI requestURI) throws IOException {
+    protected void deleteRequest(URI requestURI) throws IOException {
         HttpDelete request = new HttpDelete(requestURI);
         request.setHeader("Content-Type", "application/json");
 
