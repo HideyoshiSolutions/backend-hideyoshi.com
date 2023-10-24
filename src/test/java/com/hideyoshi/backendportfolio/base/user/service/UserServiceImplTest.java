@@ -38,13 +38,11 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    private PasswordEncoder passwordEncoder;
-
 
     @BeforeEach
     void setUp() {
-        this.passwordEncoder = new BCryptPasswordEncoder();
-        this.underTest = new UserServiceImpl(userRepository,passwordEncoder);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.underTest = new UserServiceImpl(userRepository, passwordEncoder);
     }
 
     @Test
@@ -58,14 +56,40 @@ class UserServiceImplTest {
 
         // Given
         UserDTO user = this.createUser();
+
         // When
         UserDTO userSaved = this.underTest.saveUser(user);
+
         //Then
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
 
         verify(userRepository).save(userArgumentCaptor.capture());
         assertThat(userArgumentCaptor.getValue()).isEqualTo(user.toEntity());
         assertThat(userSaved).isInstanceOf(UserDTO.class);
+    }
+
+    @Test
+    void canSaveOAuthUser() {
+
+            BDDMockito.when(userRepository.findByUsername(ArgumentMatchers.any(String.class)))
+                    .thenReturn(Optional.ofNullable(null));
+
+            BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class)))
+                    .thenReturn(createOAuthUser().toEntity());
+
+            // Given
+            UserDTO user = this.createOAuthUser();
+
+            // When
+            UserDTO userSaved = this.underTest.saveUser(user);
+
+            //Then
+            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
+            verify(userRepository).save(userArgumentCaptor.capture());
+            assertThat(userArgumentCaptor.getValue()).isEqualTo(user.toEntity());
+            assertThat(userArgumentCaptor.getValue().getPassword()).isEmpty();
+            assertThat(userSaved).isInstanceOf(UserDTO.class);
     }
 
     @Test
@@ -77,7 +101,6 @@ class UserServiceImplTest {
 
         // Given
         UserDTO user = this.createUser();
-        // When
         //Then
         assertThrows(
                 BadRequestException.class,
@@ -85,6 +108,29 @@ class UserServiceImplTest {
                     this.underTest.saveUser(user);
                 },
                 "Excepts a BadRequestException to be thrown."
+        );
+    }
+
+    @Test
+    void cannotSaveUserWithEmptyPassword() {
+
+        BDDMockito.when(userRepository.findByUsername(ArgumentMatchers.any(String.class)))
+                .thenReturn(Optional.ofNullable(null));
+
+
+        // Given
+        UserDTO user = this.createUser();
+
+        // When
+        user.setPassword(null);
+
+        //Then
+        assertThrows(
+                BadRequestException.class,
+                () -> {
+                    this.underTest.saveUser(user);
+                },
+                "Password cannot be empty."
         );
     }
 
@@ -125,6 +171,7 @@ class UserServiceImplTest {
     @Test
     void canAddRoleToUser() {
         UserDTO user = this.createUser();
+        user.setRoles(List.of());
 
         BDDMockito.when(userRepository.findById(ArgumentMatchers.any(Long.class)))
                 .thenReturn(Optional.ofNullable(user.toEntity()));
@@ -347,6 +394,40 @@ class UserServiceImplTest {
         );
     }
 
+    @Test
+    void canDeleteUser() {
+        UserDTO user = this.createUser();
+
+        BDDMockito.when(userRepository.findById(ArgumentMatchers.any(Long.class)))
+                .thenReturn(Optional.ofNullable(user.toEntity()));
+
+        // When
+        this.underTest.deleteUser(user.getId());
+        // Then
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+
+        verify(userRepository).delete(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    void cannotDeleteUser() {
+        UserDTO user = this.createUser();
+
+        BDDMockito.when(userRepository.findById(ArgumentMatchers.any(Long.class)))
+                .thenReturn(Optional.ofNullable(null));
+
+        // When
+        // Then
+        assertThrows(
+                BadRequestException.class,
+                () -> {
+                    this.underTest.deleteUser(user.getId());
+                },
+                "User doesn't exist."
+        );
+    }
+
     private UserDTO createUser() {
         return UserDTO.builder()
                 .id(1L)
@@ -355,8 +436,16 @@ class UserServiceImplTest {
                 .username("Superman")
                 .password("password")
                 .provider(Provider.LOCAL)
-                .roles(List.of(Role.USER))
                 .build();
     }
 
+    private UserDTO createOAuthUser() {
+        return UserDTO.builder()
+                .id(1L)
+                .name("Clark Kent")
+                .email("superman@gmail.com")
+                .username("Superman")
+                .provider(Provider.GOOGLE)
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.hideyoshi.backendportfolio.base.user.service;
 
+import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.entity.User;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
@@ -34,18 +35,12 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(String.format("User %s already exists. Try another UserName.", userOnDB.getUsername()));
         });
 
+        user.setPassword(this.validatePassword(user));
+
+        user.setRoles(this.validateRoles(user.getRoles()));
+
         log.info(String.format("Saving to the database user of name: %s", user.getName()));
-
-        if (Objects.nonNull(user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else {
-            user.setPassword("");
-        }
         UserDTO userSaved = new UserDTO(userRepo.save(user.toEntity()));
-
-        if (!userSaved.getRoles().contains(Role.USER)) {
-            userSaved.getRoles().add(Role.USER);
-        }
 
         return userSaved;
     }
@@ -146,5 +141,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         return this.getUser(username);
+    }
+
+    private String validatePassword(UserDTO user) {
+        String password = null;
+        if (Objects.nonNull(user.getPassword())) {
+            password = passwordEncoder.encode(user.getPassword());
+        } else if (!user.getProvider().equals(Provider.LOCAL)) {
+            password = "";
+        }
+
+        if (Objects.isNull(password)) {
+            throw new BadRequestException("Password cannot be empty.");
+        }
+
+        return password;
+    }
+
+    private List<Role> validateRoles(List<Role> roles) {
+        if (Objects.isNull(roles)) {
+            roles = List.of(Role.USER);
+        }
+
+        if (!roles.contains(Role.USER)) {
+            roles.add(Role.USER);
+        }
+
+        return roles;
     }
 }
