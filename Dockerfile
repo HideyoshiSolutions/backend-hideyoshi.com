@@ -9,7 +9,7 @@ RUN mvn -Dmaven.test.skip -f /home/app/pom.xml clean package
 #
 # Package stage
 #
-FROM ibm-semeru-runtimes:open-11.0.19_7-jre-focal
+FROM ibm-semeru-runtimes:open-17-jdk-focal
 
 COPY --from=build /home/app/target/*.jar app.jar
 COPY src/main/resources/* credentials/
