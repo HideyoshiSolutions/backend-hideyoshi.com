@@ -25,30 +25,30 @@ public class User {
     private Long id;
 
     @Column(
-        name = "name",
-        nullable = false
+            name = "name",
+            nullable = false
     )
     private String name;
 
     @Column(
-        name = "email",
-        unique = true,
-        nullable = false
+            name = "email",
+            unique = true,
+            nullable = false
     )
     private String email;
 
 
     @Column(
-        name = "username",
-        unique = true,
-        nullable = false
+            name = "username",
+            unique = true,
+            nullable = false
     )
     private String username;
 
 
     @Column(
-        name = "password",
-        nullable = false
+            name = "password",
+            nullable = false
     )
     private String password;
 
@@ -59,16 +59,10 @@ public class User {
     private String provider;
 
     @Column(
-        name = "roles",
-        nullable = false
+            name = "roles",
+            nullable = false
     )
     private String roles;
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles.stream()
-                .map(role -> role.getDescription())
-                .collect(Collectors.joining("&"));
-    }
 
     public List<Role> getRoles() {
         List<Role> roles = new ArrayList<>();
@@ -78,6 +72,12 @@ public class User {
                     .collect(Collectors.toList());
         }
         return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles.stream()
+                .map(role -> role.getDescription())
+                .collect(Collectors.joining("&"));
     }
 
 }

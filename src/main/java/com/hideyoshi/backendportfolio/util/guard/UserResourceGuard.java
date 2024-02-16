@@ -2,8 +2,8 @@ package com.hideyoshi.backendportfolio.util.guard;
 
 import java.lang.annotation.*;
 
-@Target( ElementType.METHOD )
-@Retention( RetentionPolicy.RUNTIME )
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface UserResourceGuard {
 

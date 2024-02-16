@@ -29,8 +29,8 @@ public class OAuthRequestRepository implements AuthorizationRequestRepository<OA
         String state = authorizationRequest.getState();
 
         request.getSession().setAttribute(
-            String.format("state_%s", state),
-            authorizationRequest
+                String.format("state_%s", state),
+                authorizationRequest
         );
 
     }

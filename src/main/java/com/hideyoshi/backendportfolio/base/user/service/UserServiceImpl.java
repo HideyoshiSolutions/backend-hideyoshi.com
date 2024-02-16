@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO saveUser(@Valid UserDTO user) {
 
-        this.userRepo.findByUsername(user.getUsername()).ifPresent( userOnDB -> {
+        this.userRepo.findByUsername(user.getUsername()).ifPresent(userOnDB -> {
             throw new BadRequestException(String.format("User %s already exists. Try another UserName.", userOnDB.getUsername()));
         });
 
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void alterUser(Long id, @Valid UserDTO user) {
 
-        this.userRepo.findById(id).ifPresentOrElse( userOnDB -> {
+        this.userRepo.findById(id).ifPresentOrElse(userOnDB -> {
             User userToSave = user.toEntity();
             userToSave.setId(userOnDB.getId());
             userRepo.save(userToSave);
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
 
-        this.userRepo.findById(id).ifPresentOrElse( userOnDB -> {
+        this.userRepo.findById(id).ifPresentOrElse(userOnDB -> {
             this.userRepo.delete(userOnDB);
         }, () -> {
             throw new BadRequestException("User doesn't exist.");
@@ -124,8 +124,8 @@ public class UserServiceImpl implements UserService {
         log.info(String.format("Fetching user: %s", username));
 
         return new UserDTO(
-            userRepo.findByUsername(username)
-                    .orElseThrow(() -> new BadRequestException("User Not Found. Please create an Account."))
+                userRepo.findByUsername(username)
+                        .orElseThrow(() -> new BadRequestException("User Not Found. Please create an Account."))
         );
     }
 

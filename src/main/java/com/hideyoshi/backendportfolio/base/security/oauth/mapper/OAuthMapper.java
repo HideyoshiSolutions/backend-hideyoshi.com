@@ -19,10 +19,6 @@ public enum OAuthMapper {
         this.provider = provider;
     }
 
-    public Class getMap() {
-        return oAuthMap;
-    }
-
     public static OAuthMapper byValue(String name) {
         for (OAuthMapper e : values()) {
             if (e.getProvider().getName().equals(name)) {
@@ -30,6 +26,10 @@ public enum OAuthMapper {
             }
         }
         throw new IllegalArgumentException("Argument not valid.");
+    }
+
+    public Class getMap() {
+        return oAuthMap;
     }
 
 }

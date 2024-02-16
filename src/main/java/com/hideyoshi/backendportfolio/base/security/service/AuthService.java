@@ -19,7 +19,7 @@ public interface AuthService {
 
     TokenDTO generateRefreshToken(@Valid UserDTO user, Algorithm algorithm, HttpServletRequest request);
 
-    HashMap<String,TokenDTO> generateTokens(@Valid UserDTO user, Algorithm algorithm, HttpServletRequest request);
+    HashMap<String, TokenDTO> generateTokens(@Valid UserDTO user, Algorithm algorithm, HttpServletRequest request);
 
     UsernamePasswordAuthenticationToken verifyAccessToken(String authorizationHeader);
 
