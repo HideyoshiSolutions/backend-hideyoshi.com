@@ -10,9 +10,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 
-    Provider provider;
-
     private final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+    Provider provider;
 
     @Override
     public void initialize(ValidPassword constraintAnnotation) {

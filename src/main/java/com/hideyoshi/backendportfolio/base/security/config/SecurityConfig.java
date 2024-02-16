@@ -8,10 +8,8 @@ import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,31 +66,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/user/login");
 
         http.authorizeRequests()
-            .antMatchers("/session/**").permitAll()
-            .and().authorizeRequests().antMatchers("/user/signup").permitAll()
-            .and().authorizeRequests().antMatchers("/user/oauth/**").permitAll()
-            .and().authorizeRequests().antMatchers("/user/login/**").permitAll()
-            .and().authorizeRequests().antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .antMatchers("/session/**").permitAll()
+                .and().authorizeRequests().antMatchers("/user/signup").permitAll()
+                .and().authorizeRequests().antMatchers("/user/oauth/**").permitAll()
+                .and().authorizeRequests().antMatchers("/user/login/**").permitAll()
+                .and().authorizeRequests().antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            .and().addFilter(customAuthenticationFilter)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and().addFilter(customAuthenticationFilter)
 
-            .addFilterBefore(new CustomAuthorizationFilter(this.authService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new CustomAuthorizationFilter(this.authService), UsernamePasswordAuthenticationFilter.class);
 
     }
 
     private void addOAuthSecurityToHttp(HttpSecurity http) throws Exception {
 
         http.oauth2Login()
-            .authorizationEndpoint()
-            .authorizationRequestRepository(this.oAuthRequestRepository)
-            .and().successHandler(this::successHandler)
-            .failureHandler(this::failureHandler);
+                .authorizationEndpoint()
+                .authorizationRequestRepository(this.oAuthRequestRepository)
+                .and().successHandler(this::successHandler)
+                .failureHandler(this::failureHandler);
     }
 
     private void successHandler(HttpServletRequest request,
                                 HttpServletResponse response,
-                                Authentication authentication ) throws IOException {
+                                Authentication authentication) throws IOException {
 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 

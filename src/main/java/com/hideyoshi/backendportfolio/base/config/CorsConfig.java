@@ -1,6 +1,5 @@
 package com.hideyoshi.backendportfolio.base.config;
 
-import antlr.actions.python.CodeLexer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

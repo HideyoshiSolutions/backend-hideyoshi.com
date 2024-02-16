@@ -45,21 +45,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AuthServiceImpl implements AuthService {
 
 
+    private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
+    private final UserService userService;
+    private final StorageService storageService;
     @Value("${com.hideyoshi.tokenSecret}")
     private String TOKEN_SECRET;
-
     @Value("${com.hideyoshi.accessTokenDuration}")
     private Integer ACCESS_TOKEN_DURATION;
-
     @Value("${com.hideyoshi.refreshTokenDuration}")
     private Integer REFRESH_TOKEN_DURATION;
-
-    private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
-
-    private final UserService userService;
-
-    private final StorageService storageService;
-
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;

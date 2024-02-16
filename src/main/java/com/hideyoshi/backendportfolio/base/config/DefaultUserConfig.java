@@ -31,13 +31,13 @@ public class DefaultUserConfig {
     CommandLineRunner run(UserService userService, UserRepository userRepo) {
         return args -> {
             UserDTO defaultUser = UserDTO.builder()
-                                    .name(ADMIN_NAME)
-                                    .email(ADMIN_EMAIL)
-                                    .username(ADMIN_USERNAME)
-                                    .password(ADMIN_PASSWORD)
-                                    .provider(Provider.LOCAL)
-                                    .roles(new ArrayList<>())
-                                    .build();
+                    .name(ADMIN_NAME)
+                    .email(ADMIN_EMAIL)
+                    .username(ADMIN_USERNAME)
+                    .password(ADMIN_PASSWORD)
+                    .provider(Provider.LOCAL)
+                    .roles(new ArrayList<>())
+                    .build();
             if (!userRepo.findByUsername(defaultUser.getUsername()).isPresent()) {
                 defaultUser = userService.saveUser(defaultUser);
 
