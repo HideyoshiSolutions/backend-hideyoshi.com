@@ -1,7 +1,5 @@
 package com.hideyoshi.backendportfolio.util.validator.email.valid;
 
-import com.hideyoshi.backendportfolio.util.validator.email.valid.EmailValidator;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;

@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Component
 @RequiredArgsConstructor
-public class ConfigInterceptor  implements WebMvcConfigurer {
+public class ConfigInterceptor implements WebMvcConfigurer {
 
     private final UserResourceAccessInterceptor userResourceAccessInterceptor;
 

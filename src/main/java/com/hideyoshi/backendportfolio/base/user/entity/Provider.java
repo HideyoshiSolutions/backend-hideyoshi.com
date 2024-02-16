@@ -14,10 +14,6 @@ public enum Provider {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public static Provider byValue(String name) {
         for (Provider p : values()) {
             if (p.getName().equals(name)) {
@@ -25,6 +21,10 @@ public enum Provider {
             }
         }
         throw new IllegalArgumentException("Argument not valid.");
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

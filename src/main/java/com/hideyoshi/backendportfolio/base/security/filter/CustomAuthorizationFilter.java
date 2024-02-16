@@ -19,7 +19,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    public static String AUTHORIZATION_TYPE_STRING = "Bearer ";
+    private static final List<String> notProtectedPaths = Arrays.asList(
+            "/user/login",
+            "/user/signup",
+            "/user/login/refresh"
+    );
+
+    private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
 
     private final AuthService authService;
 
@@ -62,11 +68,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private Boolean isPathNotProtected(String path) {
-
-        List<String> notProtectedPaths = Arrays.asList(
-                "/user/login"
-        );
-
         return notProtectedPaths.contains(path);
     }
 
