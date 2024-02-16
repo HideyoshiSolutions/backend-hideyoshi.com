@@ -2,6 +2,7 @@ package com.hideyoshi.backendportfolio.base.security.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidException;
 import com.hideyoshi.backendportfolio.util.exception.BadRequestException;
 import com.hideyoshi.backendportfolio.util.guard.UserResourceGuard;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class UserResourceAccessInterceptor implements HandlerInterceptor {
             Boolean accessPermission =
                     annotation.accessType().hasAccess(this.userService, this.objectMapper, request);
             if (!accessPermission) {
-                throw new BadRequestException(annotation.denialMessage());
+                throw new AuthenticationInvalidException(annotation.denialMessage());
             }
         }
         return true;
