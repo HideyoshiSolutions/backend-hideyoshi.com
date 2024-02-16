@@ -50,7 +50,7 @@ public class UserDTO implements UserDetails {
     @ValidPassword
     private String password;
 
-    @Size(min=1)
+    @Size(min = 1)
     private List<Role> roles;
 
     private String profilePictureUrl;

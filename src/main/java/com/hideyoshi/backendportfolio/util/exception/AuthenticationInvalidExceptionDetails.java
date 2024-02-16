@@ -2,7 +2,7 @@ package com.hideyoshi.backendportfolio.util.exception;
 
 import java.time.LocalDateTime;
 
-public class AuthenticationInvalidExceptionDetails extends ExceptionDetails{
+public class AuthenticationInvalidExceptionDetails extends ExceptionDetails {
 
     public AuthenticationInvalidExceptionDetails(
             String title,

@@ -61,11 +61,6 @@ public enum UserResourceGuardEnum {
         this.accessType = accessType;
     }
 
-    public abstract Boolean hasAccess(
-            UserService userService,
-            ObjectMapper objectMapper,
-            HttpServletRequest request);
-
     public static UserResourceGuardEnum byValue(String accessType) {
         for (UserResourceGuardEnum o : values()) {
             if (o.getAccessType().equals(accessType)) {
@@ -105,5 +100,10 @@ public enum UserResourceGuardEnum {
     private static Boolean openAccess(UserService userService, ObjectMapper objectMapper, HttpServletRequest request) {
         return true;
     }
+
+    public abstract Boolean hasAccess(
+            UserService userService,
+            ObjectMapper objectMapper,
+            HttpServletRequest request);
 
 }

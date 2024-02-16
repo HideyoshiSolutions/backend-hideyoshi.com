@@ -38,7 +38,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void  canFindsUserByUsername() {
+    void canFindsUserByUsername() {
         // Given
         User userSaved = this.entityManager.persist(this.createEntity());
         this.underTest.findAll();
