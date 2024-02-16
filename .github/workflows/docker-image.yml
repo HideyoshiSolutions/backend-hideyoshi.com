@@ -36,7 +36,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Runs Infra-Hideyoshi.com Deployment Dispatcher
         run: |
-          curl -X POST https://api.github.com/repos/HideyoshiNakazone/infra-hideyoshi.com/dispatches \
+          curl -X POST https://api.github.com/repos/HideyoshiSolutions/infra-hideyoshi.com/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACTIONS_KEY }} \
           --data '{"event_type": "refresh-deployments", "client_payload": { "deployments": "backend-deployment" }}'
