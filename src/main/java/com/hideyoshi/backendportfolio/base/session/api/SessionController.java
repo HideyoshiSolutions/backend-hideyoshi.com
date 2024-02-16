@@ -2,12 +2,14 @@ package com.hideyoshi.backendportfolio.base.session.api;
 
 import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.session.service.SessionManagerService;
-import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 
@@ -24,7 +26,7 @@ public class SessionController {
         return ResponseEntity.ok(this.sessionManagerService.validateSession(session));
     }
 
-    @DeleteMapping(path="/destroy")
+    @DeleteMapping(path = "/destroy")
     public ResponseEntity<Void> destroyCurrentSession(HttpSession session) {
         this.sessionManagerService.destroySession(session);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

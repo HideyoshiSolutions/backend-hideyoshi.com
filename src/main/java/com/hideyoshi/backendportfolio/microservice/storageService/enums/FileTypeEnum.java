@@ -19,7 +19,7 @@ public enum FileTypeEnum {
     }
 
     public static FileTypeEnum fromValue(String value) {
-        for (FileTypeEnum e: FileTypeEnum.values()) {
+        for (FileTypeEnum e : FileTypeEnum.values()) {
             if (e.getFileExtension().equals(value)) {
                 return e;
             }

@@ -13,10 +13,6 @@ public enum Role {
         this.description = description;
     }
 
-    public String getDescription() {
-        return this.description;
-    }
-
     public static Role byValue(String description) {
         for (Role r : values()) {
             if (r.getDescription().equals(description)) {
@@ -24,6 +20,10 @@ public enum Role {
             }
         }
         throw new IllegalArgumentException("Argument not valid.");
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
 }

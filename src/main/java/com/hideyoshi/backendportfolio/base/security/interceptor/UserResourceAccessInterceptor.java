@@ -29,7 +29,7 @@ public class UserResourceAccessInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        final UserResourceGuard annotation = ((HandlerMethod)handler)
+        final UserResourceGuard annotation = ((HandlerMethod) handler)
                 .getMethodAnnotation(UserResourceGuard.class);
 
         if (Objects.nonNull(annotation)) {

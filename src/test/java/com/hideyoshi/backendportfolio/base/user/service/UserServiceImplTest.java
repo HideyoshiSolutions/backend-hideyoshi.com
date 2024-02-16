@@ -1,6 +1,5 @@
 package com.hideyoshi.backendportfolio.base.user.service;
 
-import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.base.user.entity.Provider;
 import com.hideyoshi.backendportfolio.base.user.entity.Role;
 import com.hideyoshi.backendportfolio.base.user.entity.User;
@@ -10,7 +9,10 @@ import com.hideyoshi.backendportfolio.util.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,12 +26,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserServiceImplTest {
 
     private UserServiceImpl underTest;
@@ -70,25 +71,25 @@ class UserServiceImplTest {
     @Test
     void canSaveOAuthUser() {
 
-            BDDMockito.when(userRepository.findByUsername(ArgumentMatchers.any(String.class)))
-                    .thenReturn(Optional.ofNullable(null));
+        BDDMockito.when(userRepository.findByUsername(ArgumentMatchers.any(String.class)))
+                .thenReturn(Optional.ofNullable(null));
 
-            BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class)))
-                    .thenReturn(createOAuthUser().toEntity());
+        BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class)))
+                .thenReturn(createOAuthUser().toEntity());
 
-            // Given
-            UserDTO user = this.createOAuthUser();
+        // Given
+        UserDTO user = this.createOAuthUser();
 
-            // When
-            UserDTO userSaved = this.underTest.saveUser(user);
+        // When
+        UserDTO userSaved = this.underTest.saveUser(user);
 
-            //Then
-            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        //Then
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
 
-            verify(userRepository).save(userArgumentCaptor.capture());
-            assertThat(userArgumentCaptor.getValue()).isEqualTo(user.toEntity());
-            assertThat(userArgumentCaptor.getValue().getPassword()).isEmpty();
-            assertThat(userSaved).isInstanceOf(UserDTO.class);
+        verify(userRepository).save(userArgumentCaptor.capture());
+        assertThat(userArgumentCaptor.getValue()).isEqualTo(user.toEntity());
+        assertThat(userArgumentCaptor.getValue().getPassword()).isEmpty();
+        assertThat(userSaved).isInstanceOf(UserDTO.class);
     }
 
     @Test
@@ -181,7 +182,7 @@ class UserServiceImplTest {
         // Given
         UserDTO userSaved = this.underTest.getUser(user.getUsername());
         if (!Objects.nonNull(userSaved)) {
-             userSaved = this.underTest.saveUser(user);
+            userSaved = this.underTest.saveUser(user);
         }
         // When
         this.underTest.addRoleToUser(userSaved.getId(), Role.USER.getDescription());
