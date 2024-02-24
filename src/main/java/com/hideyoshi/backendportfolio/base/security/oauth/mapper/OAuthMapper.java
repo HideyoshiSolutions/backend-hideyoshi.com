@@ -19,9 +19,9 @@ public enum OAuthMapper {
         this.provider = provider;
     }
 
-    public static OAuthMapper byValue(String name) {
+    public static OAuthMapper byValue(Provider provider) {
         for (OAuthMapper e : values()) {
-            if (e.getProvider().getName().equals(name)) {
+            if (e.getProvider().equals(provider)) {
                 return e;
             }
         }

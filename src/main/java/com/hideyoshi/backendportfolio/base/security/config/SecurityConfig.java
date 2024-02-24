@@ -1,8 +1,10 @@
 package com.hideyoshi.backendportfolio.base.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.config.RestAuthenticationEntryPointConfig;
 import com.hideyoshi.backendportfolio.base.security.filter.CustomAuthenticationFilter;
 import com.hideyoshi.backendportfolio.base.security.filter.CustomAuthorizationFilter;
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.security.oauth.repo.OAuthRequestRepository;
 import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidException;
@@ -26,6 +28,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Log4j2
 @Configuration
@@ -95,11 +99,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 
-        this.authService.loginOAuthUser(
-                request,
-                response,
-                oauthUser
-        );
+        AuthDTO authUser = this.authService.loginOAuthUser(oauthUser, request);
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authUser);
 
     }
 

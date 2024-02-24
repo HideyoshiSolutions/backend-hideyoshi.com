@@ -1,6 +1,8 @@
 package com.hideyoshi.backendportfolio.base.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.config.RestAuthenticationEntryPointConfig;
+import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
 import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +16,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Log4j2
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -50,11 +54,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
 
-        this.authService.loginUser(
+        AuthDTO authUser = this.authService.loginUser(
                 request,
                 response,
                 (UserDTO) authentication.getPrincipal()
         );
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper()
+                .writeValue(response.getOutputStream(), authUser);
 
     }
 

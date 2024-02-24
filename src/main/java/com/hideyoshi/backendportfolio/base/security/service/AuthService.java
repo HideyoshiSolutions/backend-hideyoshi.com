@@ -56,21 +56,6 @@ public class AuthService {
     @Value("${com.hideyoshi.refreshTokenDuration}")
     private Integer REFRESH_TOKEN_DURATION;
 
-    public UsernamePasswordAuthenticationToken extractAccessTokenInfo(String accessToken) {
-        DecodedJWT decodedJWT = this.decodeToken(accessToken)
-                .orElseThrow(() -> new BadRequestException("Invalid Token"));
-
-        String username = decodedJWT.getSubject();
-        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        stream(roles).forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role));
-        });
-
-        return new UsernamePasswordAuthenticationToken(username, null, authorities);
-    }
-
     public AuthDTO signupUser(@Valid UserDTO user, HttpServletRequest request) {
         user.setProvider(Provider.LOCAL);
 
@@ -84,17 +69,26 @@ public class AuthService {
 
     }
 
-    public void loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
+    public AuthDTO loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
         user.setProfilePictureUrl(this.extractProfilePictureUrl(user));
 
-        AuthDTO authObject = this.generateNewAuthenticatedUser(
+        return this.generateNewAuthenticatedUser(
                 user,
                 request
         );
+    }
 
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), authObject);
+    public AuthDTO loginOAuthUser(OAuth2User oauthUser, HttpServletRequest request) {
+        Provider clientProvider = Provider.byValue(
+                this.getClientFromUrl(request.getRequestURL().toString())
+        );
+
+        OAuthMap oauthMap = this.generateOAuthMap(clientProvider, oauthUser);
+
+        return this.processOAuthPostLogin(
+                this.generateAuthenticatedUserFromOAuth(oauthMap, oauthUser),
+                request
+        );
     }
 
     public AuthDTO refreshAccessToken(String requestToken, HttpServletRequest request) {
@@ -117,26 +111,24 @@ public class AuthService {
 
     }
 
-    public void loginOAuthUser(HttpServletRequest request,
-                               HttpServletResponse response,
-                               OAuth2User oauthUser) throws IOException {
-
-        String clientId = this.getClientFromUrl(request.getRequestURL().toString());
-        OAuthMap oauthMap = this.generateOAuthMap(clientId, oauthUser);
-
-        AuthDTO authObject = this.processOAuthPostLogin(
-                this.generateAuthenticatedUserFromOAuth(oauthMap, oauthUser),
-                request
-        );
-
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), authObject);
-    }
-
     public UserDTO getLoggedUser() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUser(username);
+    }
+
+    public UsernamePasswordAuthenticationToken extractAccessTokenInfo(String accessToken) {
+        DecodedJWT decodedJWT = this.decodeToken(accessToken)
+                .orElseThrow(() -> new BadRequestException("Invalid Token"));
+
+        String username = decodedJWT.getSubject();
+        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        stream(roles).forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role));
+        });
+
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
     private Optional<DecodedJWT> decodeToken(String token) {
@@ -166,9 +158,9 @@ public class AuthService {
         return urlPartition[urlPartition.length - 1];
     }
 
-    private OAuthMap generateOAuthMap(String clientId, OAuth2User oauthUser) {
+    private OAuthMap generateOAuthMap(Provider clientProvider, OAuth2User oauthUser) {
         try {
-            return OAuthMapper.byValue(clientId).getMap()
+            return OAuthMapper.byValue(clientProvider).getMap()
                     .getDeclaredConstructor(OAuth2User.class).newInstance(oauthUser);
         } catch (Exception e) {
             throw new BadRequestException("Unsupported OAuth Client.");
