@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hideyoshi</groupId>
-	<artifactId>backend-api</artifactId>
+	<artifactId>auth-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>backend-api</name>
-	<description>Backend API</description>
+	<name>auth-api</name>
+	<description>Auth API for the Hideyoshi.com Project</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -107,7 +107,11 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.14</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
