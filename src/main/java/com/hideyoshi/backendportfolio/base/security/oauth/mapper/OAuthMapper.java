@@ -9,12 +9,12 @@ public enum OAuthMapper {
 
     GITHUB(GithubOAuthMap.class, Provider.GITHUB);
 
-    private final Class oAuthMap;
+    private final Class<? extends OAuthMap> oAuthMap;
 
     @Getter
     private final Provider provider;
 
-    private OAuthMapper(Class oAuthMap, Provider provider) {
+    private OAuthMapper(Class<? extends OAuthMap> oAuthMap, Provider provider) {
         this.oAuthMap = oAuthMap;
         this.provider = provider;
     }
@@ -28,7 +28,7 @@ public enum OAuthMapper {
         throw new IllegalArgumentException("Argument not valid.");
     }
 
-    public Class getMap() {
+    public Class<? extends OAuthMap> getMap() {
         return oAuthMap;
     }
 

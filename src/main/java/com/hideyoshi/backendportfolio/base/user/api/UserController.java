@@ -59,9 +59,14 @@ public class UserController {
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
     public ResponseEntity<AuthDTO> refreshAccessToken(
             @RequestBody @Valid TokenDTO refreshToken,
-            HttpServletRequest request,
-            HttpServletResponse response) {
-        return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request, response));
+            HttpServletRequest request) {
+        return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request));
+    }
+
+    @PostMapping("/login/validate")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
+    public ResponseEntity<AuthDTO> validateAccessToken(HttpServletRequest request) {
+        return ResponseEntity.ok(this.authService.validateAccessToken(request));
     }
 
     @DeleteMapping("/delete")

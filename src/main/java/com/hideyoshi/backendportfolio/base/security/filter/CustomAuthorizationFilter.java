@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hideyoshi.backendportfolio.base.security.service.AuthService;
 import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidException;
 import com.hideyoshi.backendportfolio.util.exception.AuthenticationInvalidExceptionDetails;
-import com.hideyoshi.backendportfolio.util.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -78,7 +77,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private UsernamePasswordAuthenticationToken validateUserAccess(String authorizationHeader) {
         if (Objects.nonNull(authorizationHeader) && authorizationHeader.startsWith(AUTHORIZATION_TYPE_STRING)) {
-            return this.authService.verifyAccessToken(authorizationHeader);
+            String accessToken = authorizationHeader.substring(AUTHORIZATION_TYPE_STRING.length());
+            return this.authService.extractAccessTokenInfo(accessToken);
         } else {
             throw new AuthenticationInvalidException("Access denied");
         }

@@ -63,7 +63,7 @@ public class StorageService {
     }
 
     public Optional<StorageServiceDownloadResponse> getFileUrl(String username, String filePostfix) {
-        URI uri = null;
+        URI uri;
         try {
             uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
                     .addParameter(PARAMETER_USERNAME, username)

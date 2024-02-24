@@ -1,5 +1,8 @@
 package com.hideyoshi.backendportfolio.base.user.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum Provider {
 
     GOOGLE("google"),
@@ -8,7 +11,7 @@ public enum Provider {
 
     LOCAL("local");
 
-    private String name;
+    private final String name;
 
     Provider(String name) {
         this.name = name;
@@ -21,10 +24,6 @@ public enum Provider {
             }
         }
         throw new IllegalArgumentException("Argument not valid.");
-    }
-
-    public String getName() {
-        return name;
     }
 
 }
