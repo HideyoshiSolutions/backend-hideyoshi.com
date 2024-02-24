@@ -1,6 +1,6 @@
 package com.hideyoshi.backendportfolio.base.session.service;
 
-import com.hideyoshi.backendportfolio.base.security.model.AuthDTO;
+import com.hideyoshi.backendportfolio.base.auth.model.AuthDTO;
 
 import javax.servlet.http.HttpSession;
 

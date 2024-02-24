@@ -1,9 +1,9 @@
 package com.hideyoshi.backendportfolio.util.guard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hideyoshi.backendportfolio.base.user.entity.Role;
-import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
-import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import com.hideyoshi.backendportfolio.base.auth.entity.Role;
+import com.hideyoshi.backendportfolio.base.auth.model.UserDTO;
+import com.hideyoshi.backendportfolio.base.auth.service.UserService;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

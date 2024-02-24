@@ -1,6 +1,6 @@
 package com.hideyoshi.backendportfolio.util.guard;
 
-import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
+import com.hideyoshi.backendportfolio.base.auth.model.UserDTO;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.validation.ConstraintValidator;

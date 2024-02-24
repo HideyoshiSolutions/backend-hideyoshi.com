@@ -1,6 +1,6 @@
 package com.hideyoshi.backendportfolio.util.validator.password;
 
-import com.hideyoshi.backendportfolio.base.user.entity.Provider;
+import com.hideyoshi.backendportfolio.base.auth.entity.Provider;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.ConstraintValidator;

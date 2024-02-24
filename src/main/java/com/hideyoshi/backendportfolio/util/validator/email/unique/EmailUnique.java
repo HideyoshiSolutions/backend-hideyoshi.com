@@ -1,6 +1,6 @@
 package com.hideyoshi.backendportfolio.util.validator.email.unique;
 
-import com.hideyoshi.backendportfolio.base.user.repo.UserRepository;
+import com.hideyoshi.backendportfolio.base.auth.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.ConstraintValidator;

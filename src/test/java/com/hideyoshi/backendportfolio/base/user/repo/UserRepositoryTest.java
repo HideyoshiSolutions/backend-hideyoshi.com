@@ -1,9 +1,10 @@
 package com.hideyoshi.backendportfolio.base.user.repo;
 
-import com.hideyoshi.backendportfolio.base.user.entity.Provider;
-import com.hideyoshi.backendportfolio.base.user.entity.Role;
-import com.hideyoshi.backendportfolio.base.user.entity.User;
-import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
+import com.hideyoshi.backendportfolio.base.auth.repo.UserRepository;
+import com.hideyoshi.backendportfolio.base.auth.entity.Provider;
+import com.hideyoshi.backendportfolio.base.auth.entity.Role;
+import com.hideyoshi.backendportfolio.base.auth.entity.User;
+import com.hideyoshi.backendportfolio.base.auth.model.UserDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

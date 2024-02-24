@@ -1,10 +1,10 @@
 package com.hideyoshi.backendportfolio.base.config;
 
-import com.hideyoshi.backendportfolio.base.user.entity.Provider;
-import com.hideyoshi.backendportfolio.base.user.entity.Role;
-import com.hideyoshi.backendportfolio.base.user.model.UserDTO;
-import com.hideyoshi.backendportfolio.base.user.repo.UserRepository;
-import com.hideyoshi.backendportfolio.base.user.service.UserService;
+import com.hideyoshi.backendportfolio.base.auth.entity.Provider;
+import com.hideyoshi.backendportfolio.base.auth.entity.Role;
+import com.hideyoshi.backendportfolio.base.auth.model.UserDTO;
+import com.hideyoshi.backendportfolio.base.auth.repo.UserRepository;
+import com.hideyoshi.backendportfolio.base.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
