@@ -29,7 +29,7 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO saveUser(@Valid UserDTO user) {
+    public UserDTO saveUserIfValid(@Valid UserDTO user) {
 
         this.userRepo.findByUsername(user.getUsername()).ifPresent(userOnDB -> {
             throw new BadRequestException(String.format("User %s already exists. Try another UserName.", userOnDB.getUsername()));
