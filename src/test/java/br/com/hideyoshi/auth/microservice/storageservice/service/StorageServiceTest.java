@@ -1,10 +1,11 @@
 package br.com.hideyoshi.auth.microservice.storageservice.service;
 
+import br.com.hideyoshi.auth.service.microservice.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import br.com.hideyoshi.auth.microservice.storageservice.config.StorageServiceConfig;
-import br.com.hideyoshi.auth.microservice.storageservice.enums.FileTypeEnum;
-import br.com.hideyoshi.auth.microservice.storageservice.model.StorageServiceDownloadResponse;
-import br.com.hideyoshi.auth.microservice.storageservice.model.StorageServiceUploadResponse;
+import br.com.hideyoshi.auth.config.StorageServiceConfig;
+import br.com.hideyoshi.auth.enums.FileTypeEnum;
+import br.com.hideyoshi.auth.model.microservice.StorageServiceDownloadResponse;
+import br.com.hideyoshi.auth.model.microservice.StorageServiceUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

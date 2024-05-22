@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.microservice.storageservice.enums;
+package br.com.hideyoshi.auth.enums;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

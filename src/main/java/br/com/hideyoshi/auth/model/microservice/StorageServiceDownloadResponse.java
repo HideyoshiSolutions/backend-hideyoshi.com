@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.microservice.storageservice.model;
+package br.com.hideyoshi.auth.model.microservice;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
