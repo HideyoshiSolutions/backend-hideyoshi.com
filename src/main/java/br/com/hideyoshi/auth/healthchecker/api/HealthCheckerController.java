@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.healthChecker.api;
+package br.com.hideyoshi.auth.healthchecker.api;
 
 
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;

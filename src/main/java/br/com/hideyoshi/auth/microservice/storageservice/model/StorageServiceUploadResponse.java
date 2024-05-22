@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.microservice.storageService.model;
+package br.com.hideyoshi.auth.microservice.storageservice.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,9 +9,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageServiceDownloadResponse {
+public class StorageServiceUploadResponse {
 
     @JsonProperty("presigned_url")
     private String presignedUrl;
+
+    @JsonProperty("file_key")
+    private String fileKey;
 
 }

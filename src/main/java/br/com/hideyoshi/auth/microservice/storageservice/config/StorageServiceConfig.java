@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.microservice.storageService.config;
+package br.com.hideyoshi.auth.microservice.storageservice.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

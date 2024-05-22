@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.microservice.storageService.enums;
+package br.com.hideyoshi.auth.microservice.storageservice.enums;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
