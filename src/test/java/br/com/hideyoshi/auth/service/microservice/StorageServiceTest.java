@@ -1,6 +1,5 @@
-package br.com.hideyoshi.auth.microservice.storageservice.service;
+package br.com.hideyoshi.auth.service.microservice;
 
-import br.com.hideyoshi.auth.service.microservice.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.hideyoshi.auth.config.StorageServiceConfig;
 import br.com.hideyoshi.auth.enums.FileTypeEnum;

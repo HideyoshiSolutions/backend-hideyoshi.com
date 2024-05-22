@@ -1,6 +1,5 @@
-package br.com.hideyoshi.auth.base.user.service;
+package br.com.hideyoshi.auth.service;
 
-import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.entity.Provider;
 import br.com.hideyoshi.auth.entity.Role;
 import br.com.hideyoshi.auth.entity.User;
