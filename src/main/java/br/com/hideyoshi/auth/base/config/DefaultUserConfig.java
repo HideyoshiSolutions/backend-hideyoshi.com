@@ -1,10 +1,10 @@
 package br.com.hideyoshi.auth.base.config;
 
-import br.com.hideyoshi.auth.base.auth.entity.Provider;
-import br.com.hideyoshi.auth.base.auth.entity.Role;
-import br.com.hideyoshi.auth.base.auth.model.UserDTO;
-import br.com.hideyoshi.auth.base.auth.repo.UserRepository;
-import br.com.hideyoshi.auth.base.auth.service.UserService;
+import br.com.hideyoshi.auth.base.repository.UserRepository;
+import br.com.hideyoshi.auth.base.entity.Provider;
+import br.com.hideyoshi.auth.base.entity.Role;
+import br.com.hideyoshi.auth.base.model.UserDTO;
+import br.com.hideyoshi.auth.base.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

@@ -1,9 +1,9 @@
 package br.com.hideyoshi.auth.util.guard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import br.com.hideyoshi.auth.base.auth.entity.Role;
-import br.com.hideyoshi.auth.base.auth.model.UserDTO;
-import br.com.hideyoshi.auth.base.auth.service.UserService;
+import br.com.hideyoshi.auth.base.entity.Role;
+import br.com.hideyoshi.auth.base.model.UserDTO;
+import br.com.hideyoshi.auth.base.service.UserService;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

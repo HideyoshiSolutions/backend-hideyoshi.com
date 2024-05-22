@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.util.validator.password;
 
-import br.com.hideyoshi.auth.base.auth.entity.Provider;
+import br.com.hideyoshi.auth.base.entity.Provider;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.ConstraintValidator;
