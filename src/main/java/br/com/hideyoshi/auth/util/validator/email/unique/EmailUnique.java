@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.util.validator.email.unique;
 
-import br.com.hideyoshi.auth.base.repository.UserRepository;
+import br.com.hideyoshi.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.ConstraintValidator;

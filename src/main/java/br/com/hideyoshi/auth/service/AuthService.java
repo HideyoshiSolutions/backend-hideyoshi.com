@@ -1,14 +1,13 @@
-package br.com.hideyoshi.auth.base.service;
+package br.com.hideyoshi.auth.service;
 
-import br.com.hideyoshi.auth.base.model.AuthDTO;
-import br.com.hideyoshi.auth.base.model.TokenDTO;
+import br.com.hideyoshi.auth.model.AuthDTO;
+import br.com.hideyoshi.auth.model.TokenDTO;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import br.com.hideyoshi.auth.base.entity.Provider;
-import br.com.hideyoshi.auth.base.entity.Role;
-import br.com.hideyoshi.auth.base.model.UserDTO;
+import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.model.UserDTO;
 import br.com.hideyoshi.auth.microservice.storageservice.model.StorageServiceDownloadResponse;
 import br.com.hideyoshi.auth.microservice.storageservice.service.StorageService;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
@@ -19,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;

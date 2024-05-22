@@ -1,6 +1,6 @@
-package br.com.hideyoshi.auth.base.service;
+package br.com.hideyoshi.auth.service;
 
-import br.com.hideyoshi.auth.base.model.AuthDTO;
+import br.com.hideyoshi.auth.model.AuthDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,11 +1,11 @@
 package br.com.hideyoshi.auth.base.user.service;
 
-import br.com.hideyoshi.auth.base.service.UserService;
-import br.com.hideyoshi.auth.base.entity.Provider;
-import br.com.hideyoshi.auth.base.entity.Role;
-import br.com.hideyoshi.auth.base.entity.User;
-import br.com.hideyoshi.auth.base.model.UserDTO;
-import br.com.hideyoshi.auth.base.repository.UserRepository;
+import br.com.hideyoshi.auth.service.UserService;
+import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.entity.Role;
+import br.com.hideyoshi.auth.entity.User;
+import br.com.hideyoshi.auth.model.UserDTO;
+import br.com.hideyoshi.auth.repository.UserRepository;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

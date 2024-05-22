@@ -1,6 +1,6 @@
-package br.com.hideyoshi.auth.base.repository;
+package br.com.hideyoshi.auth.repository;
 
-import br.com.hideyoshi.auth.base.entity.User;
+import br.com.hideyoshi.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

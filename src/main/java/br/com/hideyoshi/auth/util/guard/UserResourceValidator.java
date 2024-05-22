@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.util.guard;
 
-import br.com.hideyoshi.auth.base.model.UserDTO;
+import br.com.hideyoshi.auth.model.UserDTO;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.validation.ConstraintValidator;

@@ -1,7 +1,7 @@
-package br.com.hideyoshi.auth.base.controller;
+package br.com.hideyoshi.auth.controller;
 
-import br.com.hideyoshi.auth.base.model.AuthDTO;
-import br.com.hideyoshi.auth.base.service.SessionManagerService;
+import br.com.hideyoshi.auth.model.AuthDTO;
+import br.com.hideyoshi.auth.service.SessionManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.base.controller;
+package br.com.hideyoshi.auth.controller;
 
 
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;

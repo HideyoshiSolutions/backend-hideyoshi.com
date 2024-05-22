@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.base.entity;
+package br.com.hideyoshi.auth.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

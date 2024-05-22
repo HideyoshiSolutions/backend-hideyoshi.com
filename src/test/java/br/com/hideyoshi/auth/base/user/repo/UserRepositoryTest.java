@@ -1,10 +1,10 @@
 package br.com.hideyoshi.auth.base.user.repo;
 
-import br.com.hideyoshi.auth.base.repository.UserRepository;
-import br.com.hideyoshi.auth.base.entity.Provider;
-import br.com.hideyoshi.auth.base.entity.Role;
-import br.com.hideyoshi.auth.base.entity.User;
-import br.com.hideyoshi.auth.base.model.UserDTO;
+import br.com.hideyoshi.auth.repository.UserRepository;
+import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.entity.Role;
+import br.com.hideyoshi.auth.entity.User;
+import br.com.hideyoshi.auth.model.UserDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

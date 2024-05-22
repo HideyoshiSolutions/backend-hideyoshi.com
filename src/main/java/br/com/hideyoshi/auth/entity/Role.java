@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.base.entity;
+package br.com.hideyoshi.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

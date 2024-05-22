@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.base.model;
+package br.com.hideyoshi.auth.model;
 
 import lombok.Data;
 
