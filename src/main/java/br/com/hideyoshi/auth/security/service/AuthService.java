@@ -1,17 +1,17 @@
 package br.com.hideyoshi.auth.security.service;
 
+import br.com.hideyoshi.auth.entity.Provider;
 import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
+import br.com.hideyoshi.auth.model.UserDTO;
+import br.com.hideyoshi.auth.model.microservice.StorageServiceDownloadResponse;
 import br.com.hideyoshi.auth.service.UserService;
+import br.com.hideyoshi.auth.service.microservice.StorageService;
+import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import br.com.hideyoshi.auth.entity.Provider;
-import br.com.hideyoshi.auth.model.UserDTO;
-import br.com.hideyoshi.auth.model.microservice.StorageServiceDownloadResponse;
-import br.com.hideyoshi.auth.service.microservice.StorageService;
-import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;

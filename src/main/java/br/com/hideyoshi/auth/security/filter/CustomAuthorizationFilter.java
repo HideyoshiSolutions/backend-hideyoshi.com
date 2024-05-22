@@ -66,8 +66,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(FORBIDDEN.value());
 
             AuthenticationInvalidExceptionDetails error = new AuthenticationInvalidExceptionDetails("Authentication Failed. Check your credentials.",
-                                HttpStatus.FORBIDDEN.value(), e.getMessage(),
-                                e.getClass().getName(), LocalDateTime.now());
+                    HttpStatus.FORBIDDEN.value(), e.getMessage(),
+                    e.getClass().getName(), LocalDateTime.now());
 
             response.setContentType(APPLICATION_JSON_VALUE);
 

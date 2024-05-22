@@ -1,10 +1,10 @@
 package br.com.hideyoshi.auth.service;
 
-import br.com.hideyoshi.auth.repository.UserRepository;
 import br.com.hideyoshi.auth.entity.Provider;
 import br.com.hideyoshi.auth.entity.Role;
 import br.com.hideyoshi.auth.entity.User;
 import br.com.hideyoshi.auth.model.UserDTO;
+import br.com.hideyoshi.auth.repository.UserRepository;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -1,12 +1,12 @@
 package br.com.hideyoshi.auth.controller;
 
+import br.com.hideyoshi.auth.enums.FileTypeEnum;
 import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
-import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.model.UserDTO;
-import br.com.hideyoshi.auth.service.UserService;
-import br.com.hideyoshi.auth.enums.FileTypeEnum;
 import br.com.hideyoshi.auth.model.microservice.StorageServiceUploadResponse;
+import br.com.hideyoshi.auth.security.service.AuthService;
+import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.service.microservice.StorageService;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;

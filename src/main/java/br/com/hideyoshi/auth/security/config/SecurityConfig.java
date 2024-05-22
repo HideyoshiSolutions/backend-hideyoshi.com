@@ -1,11 +1,9 @@
 package br.com.hideyoshi.auth.security.config;
 
-import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.security.filter.CustomAuthenticationFilter;
 import br.com.hideyoshi.auth.security.filter.CustomAuthorizationFilter;
 import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,34 +13,25 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private HandlerExceptionResolver resolver;
-
     private final AuthService authService;
-
     private final UserDetailsService userDetailsService;
-
     private final BCryptPasswordEncoder passwordEncoder;
-
     private final RestAuthenticationEntryPointConfig restAuthenticationEntryPointConfig;
+    private HandlerExceptionResolver resolver;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -52,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
-            .cors().and().csrf().disable();
+                .cors().and().csrf().disable();
 
         this.addSecurityToHttp(http);
 //        this.addOAuthSecurityToHttp(http);
@@ -76,17 +65,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private void addSecurityToHttp(HttpSecurity http) throws Exception {
 
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(
-                                                                        this.authenticationManager(),
-                                                                        this.authService,
-                                                                        this.restAuthenticationEntryPointConfig
-                                                                );
+                this.authenticationManager(),
+                this.authService,
+                this.restAuthenticationEntryPointConfig
+        );
 
         customAuthenticationFilter.setFilterProcessesUrl("/user/login");
 
         http.addFilter(customAuthenticationFilter);
 
     }
-//
+
+    //
 //    private void addOAuthSecurityToHttp(HttpSecurity http) throws Exception {
 //
 //        http.oauth2Login()

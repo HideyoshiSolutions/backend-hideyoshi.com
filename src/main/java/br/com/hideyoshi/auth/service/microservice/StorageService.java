@@ -1,11 +1,11 @@
 package br.com.hideyoshi.auth.service.microservice;
 
 import br.com.hideyoshi.auth.config.StorageServiceConfig;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.hideyoshi.auth.enums.FileTypeEnum;
 import br.com.hideyoshi.auth.model.microservice.StorageServiceDownloadResponse;
 import br.com.hideyoshi.auth.model.microservice.StorageServiceUploadResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.client.methods.HttpDelete;
@@ -20,9 +20,9 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -137,11 +137,7 @@ public class StorageService {
         HttpPost request = new HttpPost(requestURI);
         request.setHeader("Content-Type", "application/json");
 
-        try {
-            request.setEntity(new ByteArrayEntity(requestBody.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        request.setEntity(new ByteArrayEntity(requestBody.getBytes(StandardCharsets.UTF_8)));
 
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy()).build();

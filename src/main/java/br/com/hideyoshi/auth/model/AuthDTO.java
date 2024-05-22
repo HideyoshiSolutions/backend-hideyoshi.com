@@ -1,9 +1,9 @@
 package br.com.hideyoshi.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import br.com.hideyoshi.auth.entity.Provider;
 import br.com.hideyoshi.auth.entity.Role;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
