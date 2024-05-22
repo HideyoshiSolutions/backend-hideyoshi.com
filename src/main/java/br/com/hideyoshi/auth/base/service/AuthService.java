@@ -2,8 +2,6 @@ package br.com.hideyoshi.auth.base.service;
 
 import br.com.hideyoshi.auth.base.model.AuthDTO;
 import br.com.hideyoshi.auth.base.model.TokenDTO;
-import br.com.hideyoshi.auth.base.oauth.mapper.OAuthMap;
-import br.com.hideyoshi.auth.base.oauth.mapper.OAuthMapper;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -44,13 +42,13 @@ public class AuthService {
 
     private final StorageService storageService;
 
-    @Value("${com.hideyoshi.tokenSecret}")
+    @Value("${br.com.hideyoshi.tokenSecret}")
     private String TOKEN_SECRET;
 
-    @Value("${com.hideyoshi.accessTokenDuration}")
+    @Value("${br.com.hideyoshi.accessTokenDuration}")
     private Integer ACCESS_TOKEN_DURATION;
 
-    @Value("${com.hideyoshi.refreshTokenDuration}")
+    @Value("${br.com.hideyoshi.refreshTokenDuration}")
     private Integer REFRESH_TOKEN_DURATION;
 
     public AuthDTO signupUser(@Valid UserDTO user, HttpServletRequest request) {
@@ -71,19 +69,6 @@ public class AuthService {
 
         return this.generateNewAuthenticatedUser(
                 user,
-                request
-        );
-    }
-
-    public AuthDTO loginOAuthUser(OAuth2User oauthUser, HttpServletRequest request) {
-        Provider clientProvider = Provider.byValue(
-                this.getClientFromUrl(request.getRequestURL().toString())
-        );
-
-        OAuthMap oauthMap = this.generateOAuthMap(clientProvider, oauthUser);
-
-        return this.processOAuthPostLogin(
-                this.generateAuthenticatedUserFromOAuth(oauthMap, oauthUser),
                 request
         );
     }
@@ -155,37 +140,10 @@ public class AuthService {
         return urlPartition[urlPartition.length - 1];
     }
 
-    private OAuthMap generateOAuthMap(Provider clientProvider, OAuth2User oauthUser) {
-        try {
-            return OAuthMapper.byValue(clientProvider).getMap()
-                    .getDeclaredConstructor(OAuth2User.class).newInstance(oauthUser);
-        } catch (Exception e) {
-            throw new BadRequestException("Unsupported OAuth Client.");
-        }
-    }
-
     private String extractProfilePictureUrl(UserDTO user) {
         return this.storageService.getFileUrl(user.getUsername(), "profile")
                 .map(StorageServiceDownloadResponse::getPresignedUrl)
                 .orElse(null);
-    }
-
-    private UserDTO generateAuthenticatedUserFromOAuth(OAuthMap oauthMap, OAuth2User oauthUser) {
-        UserDTO user;
-        try {
-            user = this.userService.getUser(oauthMap.getPrincipal());
-        } catch (BadRequestException e) {
-            user = UserDTO.builder()
-                    .name(oauthUser.getAttribute("name"))
-                    .username(oauthMap.getPrincipal())
-                    .email(oauthUser.getAttribute("email"))
-                    .roles(List.of(Role.USER))
-                    .provider(oauthMap.getProvider())
-                    .build();
-        }
-        user.setProfilePictureUrl(oauthMap.getProfilePicture());
-
-        return user;
     }
 
     private AuthDTO generateNewAuthenticatedUser(UserDTO user, HttpServletRequest request) {

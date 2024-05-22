@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 public class StorageServiceConfig {
-    @Value("${com.hideyoshi.microservice.storageServicePath}")
+    @Value("${br.com.hideyoshi.microservice.storageServicePath}")
     private String fileServicePath;
 }
