@@ -1,7 +1,8 @@
-package br.com.hideyoshi.auth.service;
+package br.com.hideyoshi.auth.security.service;
 
 import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
+import br.com.hideyoshi.auth.service.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;

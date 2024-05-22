@@ -2,7 +2,7 @@ package br.com.hideyoshi.auth.controller;
 
 import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
-import br.com.hideyoshi.auth.service.AuthService;
+import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.model.UserDTO;
 import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.enums.FileTypeEnum;
@@ -26,7 +26,6 @@ import java.util.List;
 
 @Log4j2
 @Controller
-@RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
