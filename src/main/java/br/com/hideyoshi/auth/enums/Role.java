@@ -1,4 +1,4 @@
-package br.com.hideyoshi.auth.entity;
+package br.com.hideyoshi.auth.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

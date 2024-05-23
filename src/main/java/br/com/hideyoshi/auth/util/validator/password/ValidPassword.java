@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.util.validator.password;
 
-import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.enums.Provider;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

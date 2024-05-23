@@ -1,7 +1,7 @@
 package br.com.hideyoshi.auth.security.service;
 
-import br.com.hideyoshi.auth.entity.Provider;
-import br.com.hideyoshi.auth.entity.Role;
+import br.com.hideyoshi.auth.enums.Provider;
+import br.com.hideyoshi.auth.enums.Role;
 import br.com.hideyoshi.auth.model.UserAuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
 import br.com.hideyoshi.auth.model.UserDTO;

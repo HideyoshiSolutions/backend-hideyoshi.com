@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.security.oauth2.model;
 
-import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.enums.Provider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

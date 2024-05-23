@@ -1,7 +1,7 @@
 package br.com.hideyoshi.auth.model;
 
-import br.com.hideyoshi.auth.entity.Provider;
-import br.com.hideyoshi.auth.entity.Role;
+import br.com.hideyoshi.auth.enums.Provider;
+import br.com.hideyoshi.auth.enums.Role;
 import br.com.hideyoshi.auth.entity.User;
 import br.com.hideyoshi.auth.util.validator.email.unique.UniqueEmail;
 import br.com.hideyoshi.auth.util.validator.email.valid.ValidEmail;

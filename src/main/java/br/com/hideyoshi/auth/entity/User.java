@@ -1,5 +1,6 @@
 package br.com.hideyoshi.auth.entity;
 
+import br.com.hideyoshi.auth.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

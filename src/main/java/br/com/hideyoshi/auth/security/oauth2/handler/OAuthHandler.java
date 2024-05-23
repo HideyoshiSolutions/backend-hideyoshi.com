@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.security.oauth2.handler;
 
-import br.com.hideyoshi.auth.entity.Provider;
+import br.com.hideyoshi.auth.enums.Provider;
 import br.com.hideyoshi.auth.security.oauth2.model.OAuthDTO;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import org.springframework.security.oauth2.core.user.OAuth2User;

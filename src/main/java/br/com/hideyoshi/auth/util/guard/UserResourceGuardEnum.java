@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.util.guard;
 
-import br.com.hideyoshi.auth.entity.Role;
+import br.com.hideyoshi.auth.enums.Role;
 import br.com.hideyoshi.auth.model.UserDTO;
 import br.com.hideyoshi.auth.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
