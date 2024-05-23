@@ -4,7 +4,9 @@ import br.com.hideyoshi.auth.security.filter.CustomAuthenticationFilter;
 import br.com.hideyoshi.auth.security.filter.CustomAuthorizationFilter;
 import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
+import br.com.hideyoshi.auth.util.guard.UserResourceHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,9 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthService authService;
     private final UserDetailsService userDetailsService;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final RestAuthenticationEntryPointConfig restAuthenticationEntryPointConfig;
-    private HandlerExceptionResolver resolver;
+    private final UserResourceHandler userResourceHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -46,20 +47,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.addSecurityToHttp(http);
 //        this.addOAuthSecurityToHttp(http);
 
-        this.configureOpenEndpoints(http);
+        this.configureEndpoints(http);
     }
 
-    private void configureOpenEndpoints(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/session/**").permitAll()
-                .and().authorizeRequests().antMatchers("/health").permitAll()
-                .and().authorizeRequests().antMatchers("/user/signup").permitAll()
-                .and().authorizeRequests().antMatchers("/user/oauth/**").permitAll()
-                .and().authorizeRequests().antMatchers("/user/login/**").permitAll()
-                .and().authorizeRequests().antMatchers("/session/**").permitAll()
-                .and().authorizeRequests().antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .and().addFilterAfter(new CustomAuthorizationFilter(this.authService), UsernamePasswordAuthenticationFilter.class);
+    private void configureEndpoints(HttpSecurity http) throws Exception {
+        for (String endpoint : this.userResourceHandler.getOpenPaths()) {
+            http.authorizeRequests().antMatchers(endpoint).permitAll();
+        }
+
+        for (String endpoint : this.userResourceHandler.getGuardedPaths()) {
+            http.authorizeRequests().antMatchers(endpoint).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+        }
+
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+        http.addFilterAfter(
+            new CustomAuthorizationFilter(this.authService, this.userResourceHandler),
+            UsernamePasswordAuthenticationFilter.class
+        );
     }
 
     private void addSecurityToHttp(HttpSecurity http) throws Exception {

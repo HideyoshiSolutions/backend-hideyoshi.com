@@ -2,6 +2,8 @@ package br.com.hideyoshi.auth.controller;
 
 import br.com.hideyoshi.auth.model.AuthDTO;
 import br.com.hideyoshi.auth.service.SessionManagerService;
+import br.com.hideyoshi.auth.util.guard.UserResourceGuard;
+import br.com.hideyoshi.auth.util.guard.UserResourceGuardEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +18,19 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/session")
+@RequestMapping("/session")
 public class SessionController {
 
     private final SessionManagerService sessionManagerService;
 
-    @GetMapping(path = "/validate")
+    @GetMapping("/validate")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
     public ResponseEntity<AuthDTO> validateCurrentSession(HttpSession session) {
         return ResponseEntity.ok(this.sessionManagerService.validateSession(session));
     }
 
-    @DeleteMapping(path = "/destroy")
+    @DeleteMapping("/destroy")
+    @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
     public ResponseEntity<Void> destroyCurrentSession(HttpSession session) {
         this.sessionManagerService.destroySession(session);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

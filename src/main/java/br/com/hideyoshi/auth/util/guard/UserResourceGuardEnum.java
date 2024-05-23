@@ -21,7 +21,7 @@ public enum UserResourceGuardEnum {
                 UserService userService,
                 ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return justUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.justUser(userService, objectMapper, request);
         }
     },
 
@@ -31,7 +31,7 @@ public enum UserResourceGuardEnum {
                 UserService userService,
                 ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return sameUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.sameUser(userService, objectMapper, request);
         }
     },
 
@@ -41,7 +41,7 @@ public enum UserResourceGuardEnum {
                 UserService userService,
                 ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return adminUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.adminUser(userService, objectMapper, request);
         }
     },
 

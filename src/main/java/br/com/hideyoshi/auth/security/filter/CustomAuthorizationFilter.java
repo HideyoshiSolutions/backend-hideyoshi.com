@@ -3,13 +3,17 @@ package br.com.hideyoshi.auth.security.filter;
 import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidExceptionDetails;
+import br.com.hideyoshi.auth.util.guard.UserResourceHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -27,38 +29,27 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private static final List<String> notProtectedPaths = Arrays.asList(
-            "/health",
-            "/user/login",
-            "/user/signup",
-            "/user/login/refresh",
-            "/session/validate",
-            "/session/destroy"
-    );
-
     private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
 
     private final AuthService authService;
 
-    public CustomAuthorizationFilter(AuthService authService) {
+    private final UserResourceHandler userResourceHandler;
+
+    public CustomAuthorizationFilter(AuthService authService, UserResourceHandler userResourceHandler) {
         this.authService = authService;
+        this.userResourceHandler = userResourceHandler;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (this.isPathNotProtected(request.getServletPath())) {
+        if (!this.isPathGuarded(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-
         try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    this.validateUserAccess(authorizationHeader);
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            this.setUserContext(request);
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
@@ -79,8 +70,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    private Boolean isPathNotProtected(String path) {
-        return notProtectedPaths.contains(path);
+    private void setUserContext(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                this.validateUserAccess(authorizationHeader);
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
     private UsernamePasswordAuthenticationToken validateUserAccess(String authorizationHeader) {
@@ -90,5 +85,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         } else {
             throw new AuthenticationInvalidException("Access denied");
         }
+    }
+
+    private boolean isPathGuarded(String path) {
+        return this.userResourceHandler.getGuardedPaths().stream()
+                .anyMatch(p -> isPatternMatchUri(p, path));
+    }
+
+    private boolean isPatternMatchUri(String pattern, String url) {
+        PathPatternParser pathPatternParser = new PathPatternParser();
+        PathPattern pathPattern = pathPatternParser.parse(pattern);
+        PathContainer pathContainer = PathContainer.parsePath(url);
+        return pathPattern.matches(pathContainer);
     }
 }

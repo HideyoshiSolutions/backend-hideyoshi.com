@@ -12,7 +12,7 @@ public class InterceptorConfigurer implements WebMvcConfigurer {
     private final UserResourceAccessInterceptor userResourceAccessInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(this.userResourceAccessInterceptor);
+        registry.addInterceptor(this.userResourceAccessInterceptor);
     }
 
 }
