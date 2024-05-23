@@ -1,7 +1,7 @@
 package br.com.hideyoshi.auth.controller;
 
 import br.com.hideyoshi.auth.enums.FileTypeEnum;
-import br.com.hideyoshi.auth.model.AuthDTO;
+import br.com.hideyoshi.auth.model.UserAuthDTO;
 import br.com.hideyoshi.auth.model.TokenDTO;
 import br.com.hideyoshi.auth.model.UserDTO;
 import br.com.hideyoshi.auth.model.microservice.StorageServiceUploadResponse;
@@ -44,7 +44,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public ResponseEntity<AuthDTO> signupUser(@RequestBody @Valid UserDTO user, HttpServletRequest request) {
+    public ResponseEntity<UserAuthDTO> signupUser(@RequestBody @Valid UserDTO user, HttpServletRequest request) {
         URI uri = URI.create(
                 ServletUriComponentsBuilder
                         .fromCurrentContextPath()
@@ -55,7 +55,7 @@ public class UserController {
 
     @PostMapping("/login/refresh")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public ResponseEntity<AuthDTO> refreshAccessToken(
+    public ResponseEntity<UserAuthDTO> refreshAccessToken(
             @RequestBody @Valid TokenDTO refreshToken,
             HttpServletRequest request) {
         return ResponseEntity.ok(this.authService.refreshAccessToken(refreshToken.getToken(), request));
@@ -63,7 +63,7 @@ public class UserController {
 
     @PostMapping("/login/validate")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public ResponseEntity<AuthDTO> validateAccessToken(HttpServletRequest request) {
+    public ResponseEntity<UserAuthDTO> validateAccessToken(HttpServletRequest request) {
         return ResponseEntity.ok(this.authService.validateAccessToken(request));
     }
 

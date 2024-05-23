@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.security.filter;
 
-import br.com.hideyoshi.auth.model.AuthDTO;
+import br.com.hideyoshi.auth.model.UserAuthDTO;
 import br.com.hideyoshi.auth.model.UserDTO;
 import br.com.hideyoshi.auth.security.config.RestAuthenticationEntryPointConfig;
 import br.com.hideyoshi.auth.security.service.AuthService;
@@ -52,7 +52,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
 
-        AuthDTO authUser = this.authService.loginUser(
+        UserAuthDTO authUser = this.authService.loginUser(
                 request,
                 response,
                 (UserDTO) authentication.getPrincipal()

@@ -1,6 +1,6 @@
 package br.com.hideyoshi.auth.controller;
 
-import br.com.hideyoshi.auth.model.AuthDTO;
+import br.com.hideyoshi.auth.model.UserAuthDTO;
 import br.com.hideyoshi.auth.service.SessionManagerService;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuardEnum;
@@ -25,7 +25,7 @@ public class SessionController {
 
     @GetMapping("/validate")
     @UserResourceGuard(accessType = UserResourceGuardEnum.OPEN)
-    public ResponseEntity<AuthDTO> validateCurrentSession(HttpSession session) {
+    public ResponseEntity<UserAuthDTO> validateCurrentSession(HttpSession session) {
         return ResponseEntity.ok(this.sessionManagerService.validateSession(session));
     }
 

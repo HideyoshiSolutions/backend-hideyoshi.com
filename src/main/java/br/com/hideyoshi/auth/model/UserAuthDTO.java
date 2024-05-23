@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthDTO implements Serializable {
+public class UserAuthDTO implements Serializable {
 
     private Long id;
 
@@ -36,7 +36,7 @@ public class AuthDTO implements Serializable {
 
     private TokenDTO refreshToken;
 
-    public AuthDTO(UserDTO user, TokenDTO accessToken, TokenDTO refreshToken) {
+    public UserAuthDTO(UserDTO user, TokenDTO accessToken, TokenDTO refreshToken) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
