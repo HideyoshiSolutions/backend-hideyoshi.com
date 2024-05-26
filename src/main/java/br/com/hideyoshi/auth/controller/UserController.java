@@ -94,41 +94,48 @@ public class UserController {
 
     @PostMapping("/profile-picture")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public StorageServiceUploadResponse addProfilePicture(
+    public ResponseEntity<StorageServiceUploadResponse> addProfilePicture(
             @RequestParam FileTypeEnum fileType
     ) {
         UserDTO user = this.authService.getLoggedUser();
-        var optionalResponse = this.storageService.getNewFileUrl(
+
+
+
+        var newFileOption = this.storageService.getNewFileUrl(
                 user.getUsername(),
                 "profile",
                 fileType
         );
 
-        var data = optionalResponse.orElseThrow(() -> new BadRequestException("File not found"));
+        if (newFileOption.isEmpty()) {
+            throw new BadRequestException("Invalid File Type");
+        }
 
-        log.info(data);
-
-        return data;
+        return ResponseEntity.ok(newFileOption.get());
     }
 
     @DeleteMapping("/profile-picture")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public void deleteProfilePicture() {
+    public ResponseEntity<Void> deleteProfilePicture() {
         UserDTO user = this.authService.getLoggedUser();
         this.storageService.deleteFile(
                 user.getUsername(),
                 "profile"
         );
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/profile-picture/proccess")
     @UserResourceGuard(accessType = UserResourceGuardEnum.USER)
-    public void processProfilePicture() {
+    public ResponseEntity<Void> processProfilePicture() {
         UserDTO user = this.authService.getLoggedUser();
         this.storageService.processFile(
                 user.getUsername(),
                 "profile"
         );
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
