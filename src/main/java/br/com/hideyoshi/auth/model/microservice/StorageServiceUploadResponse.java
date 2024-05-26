@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StorageServiceUploadResponse {
 
-    @JsonProperty("presigned_url")
-    private String presignedUrl;
+    @JsonProperty("signed_url")
+    private String signedUrl;
 
-    @JsonProperty("file_key")
-    private String fileKey;
+    @JsonProperty("expires_in")
+    private String expiresIn;
 
 }
