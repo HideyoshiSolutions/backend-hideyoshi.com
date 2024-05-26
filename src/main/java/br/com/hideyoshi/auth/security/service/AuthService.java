@@ -39,8 +39,6 @@ import static java.util.Arrays.stream;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private static final String AUTHORIZATION_TYPE_STRING = "Bearer ";
-
     private final UserService userService;
 
     private final StorageService storageService;
@@ -166,7 +164,7 @@ public class AuthService {
 
     private String extractProfilePictureUrl(UserDTO user) {
         return this.storageService.getFileUrl(user.getUsername(), "profile")
-                .map(StorageServiceDownloadResponse::getPresignedUrl)
+                .map(StorageServiceDownloadResponse::getSignedUrl)
                 .orElse(null);
     }
 
