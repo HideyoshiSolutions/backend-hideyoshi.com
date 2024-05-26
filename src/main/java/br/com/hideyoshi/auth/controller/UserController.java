@@ -98,11 +98,17 @@ public class UserController {
             @RequestParam FileTypeEnum fileType
     ) {
         UserDTO user = this.authService.getLoggedUser();
-        return this.storageService.getNewFileUrl(
+        var optionalResponse = this.storageService.getNewFileUrl(
                 user.getUsername(),
                 "profile",
                 fileType
-        ).orElseThrow(() -> new BadRequestException("File not found"));
+        );
+
+        var data = optionalResponse.orElseThrow(() -> new BadRequestException("File not found"));
+
+        log.info(data);
+
+        return data;
     }
 
     @DeleteMapping("/profile-picture")

@@ -61,15 +61,31 @@ public class SecurityConfig {
         http.httpBasic().disable()
                 .cors().and().csrf().disable();
 
-        this.addEndpointSecurityToHttp(http);
-        this.addOAuthSecurityToHttp(http);
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
 
-        this.configureEndpoints(http);
+        http.exceptionHandling()
+                .authenticationEntryPoint(this::failureHandler);
 
-        return http.build();
-    }
+        http.formLogin(form -> form
+                .loginProcessingUrl("/user/login")
+                .successHandler(this::successFormHandler)
+                .failureHandler(this::failureHandler)
+        );
 
-    private void configureEndpoints(HttpSecurity http) throws Exception {
+        http.oauth2Login(
+                oauth -> oauth
+                        .authorizationEndpoint()
+                        .authorizationRequestRepository(this.oAuthRequestRepository)
+                        .and().successHandler(this::successOAuth2Handler)
+                        .failureHandler(this::failureHandler)
+
+        );
+
+        http.addFilterBefore(
+            new JWTAuthenticationFilter(this.authService),
+            UsernamePasswordAuthenticationFilter.class
+        );
+
         for (String endpoint : this.userResourceHandler.getOpenPaths()) {
             http.authorizeRequests().antMatchers(endpoint).permitAll();
         }
@@ -78,30 +94,7 @@ public class SecurityConfig {
             http.authorizeRequests().antMatchers(endpoint).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
         }
 
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-        http.addFilterBefore(
-            new JWTAuthenticationFilter(this.authService),
-            UsernamePasswordAuthenticationFilter.class
-        );
-    }
-
-    private void addEndpointSecurityToHttp(HttpSecurity http) throws Exception {
-        http.formLogin(form -> form
-                .loginProcessingUrl("/user/login")
-                .successHandler(this::successFormHandler)
-                .failureHandler(this::failureHandler)
-        );
-
-        http.authorizeRequests().antMatchers("/login").denyAll();
-    }
-
-    private void addOAuthSecurityToHttp(HttpSecurity http) throws Exception {
-
-        http.oauth2Login()
-                .authorizationEndpoint()
-                .authorizationRequestRepository(this.oAuthRequestRepository)
-                .and().successHandler(this::successOAuth2Handler)
-                .failureHandler(this::failureHandler);
+        return http.build();
     }
 
     private void successFormHandler(HttpServletRequest request,
