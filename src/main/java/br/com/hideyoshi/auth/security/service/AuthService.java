@@ -27,7 +27,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -130,10 +129,9 @@ public class AuthService {
         JWTVerifier verifier = JWT.require(algorithm).build();
         try {
             return Optional.of(verifier.verify(token));
-        } catch (Exception e) {
-            log.warn("Token verification failed: {}", e.getMessage());
+        } catch (Exception ignored) {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     private UserDTO getUserFromOAuth2User(OAuthDTO oAuth2User) {

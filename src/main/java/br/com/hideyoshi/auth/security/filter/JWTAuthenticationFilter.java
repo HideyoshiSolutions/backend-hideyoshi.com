@@ -1,7 +1,7 @@
 package br.com.hideyoshi.auth.security.filter;
 
 import br.com.hideyoshi.auth.security.service.AuthService;
-import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
+import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -52,7 +52,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = authorizationHeader.substring(AUTHORIZATION_TYPE_STRING.length());
             return this.authService.extractAccessTokenInfo(accessToken);
         } else {
-            throw new AuthenticationInvalidException("Access denied");
+            throw new BadRequestException("No authorization header found");
         }
     }
 }
