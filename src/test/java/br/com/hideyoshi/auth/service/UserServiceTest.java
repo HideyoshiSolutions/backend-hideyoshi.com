@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -386,7 +387,7 @@ class UserServiceTest {
         // When
         //Then
         assertThrows(
-                BadRequestException.class,
+                UsernameNotFoundException.class,
                 () -> {
                     this.underTest.loadUserByUsername(user.getUsername());
                 },

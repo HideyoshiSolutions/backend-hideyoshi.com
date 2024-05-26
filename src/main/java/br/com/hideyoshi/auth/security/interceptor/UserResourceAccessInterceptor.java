@@ -2,6 +2,7 @@ package br.com.hideyoshi.auth.security.interceptor;
 
 import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
+import br.com.hideyoshi.auth.util.exception.AuthorizationException;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,6 @@ public class UserResourceAccessInterceptor implements HandlerInterceptor {
 
     private final UserService userService;
 
-    private final ObjectMapper objectMapper;
-
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
 
         if (!(handler instanceof HandlerMethod)) {
@@ -34,9 +33,9 @@ public class UserResourceAccessInterceptor implements HandlerInterceptor {
 
         if (Objects.nonNull(annotation)) {
             Boolean accessPermission =
-                    annotation.accessType().hasAccess(this.userService, this.objectMapper, request);
+                    annotation.accessType().hasAccess(this.userService, request);
             if (!accessPermission) {
-                throw new AuthenticationInvalidException(annotation.denialMessage());
+                throw new AuthorizationException(annotation.denialMessage());
             }
         }
         return true;

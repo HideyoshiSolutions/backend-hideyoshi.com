@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,7 +70,7 @@ public class AuthService {
 
     }
 
-    public UserAuthDTO loginUser(HttpServletRequest request, HttpServletResponse response, @Valid UserDTO user) throws IOException {
+    public UserAuthDTO loginUser(HttpServletRequest request, @Valid UserDTO user) throws IOException {
         user.setProfilePictureUrl(this.extractProfilePictureUrl(user));
 
         return this.generateNewAuthenticatedUser(
@@ -108,23 +109,20 @@ public class AuthService {
     }
 
     public UserDTO getLoggedUser() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userService.getUser(username);
+        return (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    public UsernamePasswordAuthenticationToken extractAccessTokenInfo(String accessToken) {
+    public Authentication extractAccessTokenInfo(String accessToken) {
         DecodedJWT decodedJWT = this.decodeToken(accessToken)
                 .orElseThrow(() -> new BadRequestException("Invalid Token"));
 
-        String username = decodedJWT.getSubject();
-        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        stream(roles).forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role));
-        });
-
-        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        return new UsernamePasswordAuthenticationToken(
+                this.userService.getUser(decodedJWT.getSubject()),
+                null,
+                stream(decodedJWT.getClaim("roles").asArray(String.class))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList())
+        );
     }
 
     private Optional<DecodedJWT> decodeToken(String token) {

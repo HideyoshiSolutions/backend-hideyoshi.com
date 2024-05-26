@@ -40,6 +40,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<AuthorizationExceptionDetails> handleBadRequest(final AuthorizationException exception) {
+        return new ResponseEntity<>(
+                new AuthorizationExceptionDetails("Authorization Failed. Check your permissions.",
+                        HttpStatus.FORBIDDEN.value(), exception.getMessage(),
+                        exception.getClass().getName(), LocalDateTime.now()),
+                HttpStatus.FORBIDDEN);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             final MethodArgumentNotValidException exception, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {

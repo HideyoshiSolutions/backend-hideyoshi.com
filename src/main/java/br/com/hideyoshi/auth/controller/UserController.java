@@ -8,6 +8,7 @@ import br.com.hideyoshi.auth.model.microservice.StorageServiceUploadResponse;
 import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.service.microservice.StorageService;
+import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidException;
 import br.com.hideyoshi.auth.util.exception.BadRequestException;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuard;
 import br.com.hideyoshi.auth.util.guard.UserResourceGuardEnum;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 

@@ -19,9 +19,8 @@ public enum UserResourceGuardEnum {
         @Override
         public Boolean hasAccess(
                 UserService userService,
-                ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return UserResourceGuardEnum.justUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.justUser(userService, request);
         }
     },
 
@@ -29,9 +28,8 @@ public enum UserResourceGuardEnum {
         @Override
         public Boolean hasAccess(
                 UserService userService,
-                ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return UserResourceGuardEnum.sameUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.sameUser(userService, request);
         }
     },
 
@@ -39,9 +37,8 @@ public enum UserResourceGuardEnum {
         @Override
         public Boolean hasAccess(
                 UserService userService,
-                ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return UserResourceGuardEnum.adminUser(userService, objectMapper, request);
+            return UserResourceGuardEnum.adminUser(userService, request);
         }
     },
 
@@ -49,9 +46,8 @@ public enum UserResourceGuardEnum {
         @Override
         public Boolean hasAccess(
                 UserService userService,
-                ObjectMapper objectMapper,
                 HttpServletRequest request) {
-            return openAccess(userService, objectMapper, request);
+            return openAccess(userService, request);
         }
     };
 
@@ -70,19 +66,18 @@ public enum UserResourceGuardEnum {
         throw new IllegalArgumentException("Argument not valid.");
     }
 
-    private static boolean justUser(UserService userService, ObjectMapper objectMapper, HttpServletRequest request) {
-
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDTO userLogged = userService.getUser(username);
+    private static boolean justUser(UserService userService, HttpServletRequest request) {
+        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return userLogged.getAuthorities().contains(new SimpleGrantedAuthority(Role.USER.getDescription()));
     }
 
-    private static boolean sameUser(UserService userService, ObjectMapper objectMapper, HttpServletRequest request) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDTO userLogged = userService.getUser(username);
+    private static boolean sameUser(UserService userService, HttpServletRequest request) {
+        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Object requestPathVariable = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+        ObjectMapper objectMapper = new ObjectMapper();
         HashMap<String, String> pathVariable = objectMapper.convertValue(requestPathVariable, HashMap.class);
         UserDTO userInfo = userService.getUser(Long.parseLong(pathVariable.get("id")));
 
@@ -90,20 +85,17 @@ public enum UserResourceGuardEnum {
 
     }
 
-    private static boolean adminUser(UserService userService, ObjectMapper objectMapper, HttpServletRequest request) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDTO userLogged = userService.getUser(username);
-
+    private static boolean adminUser(UserService userService, HttpServletRequest request) {
+        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userLogged.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.getDescription()));
     }
 
-    private static Boolean openAccess(UserService userService, ObjectMapper objectMapper, HttpServletRequest request) {
+    private static Boolean openAccess(UserService userService, HttpServletRequest request) {
         return true;
     }
 
     public abstract Boolean hasAccess(
             UserService userService,
-            ObjectMapper objectMapper,
             HttpServletRequest request);
 
 }
