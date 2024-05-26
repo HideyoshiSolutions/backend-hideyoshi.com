@@ -35,7 +35,7 @@ public class StorageService {
 
     private final StorageServiceConfig storageServiceConfig;
 
-    private final String PARAMETER_USERNAME = "username";
+    private final String PARAMETER_FILE_KEY = "file_key";
 
     private final String PARAMETER_FILE_POSTFIX = "file_postfix";
 
@@ -43,7 +43,7 @@ public class StorageService {
 
     public Optional<StorageServiceUploadResponse> getNewFileUrl(String username, String filePostfix, FileTypeEnum fileTypeEnum) {
         HashMap<String, String> values = new HashMap<>() {{
-            put(PARAMETER_USERNAME, username);
+            put(PARAMETER_FILE_KEY, username);
             put(PARAMETER_FILE_POSTFIX, filePostfix);
             put(PARAMETER_FILE_TYPE, fileTypeEnum.getFileExtension());
         }};
@@ -66,7 +66,7 @@ public class StorageService {
         URI uri;
         try {
             uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
-                    .addParameter(PARAMETER_USERNAME, username)
+                    .addParameter(PARAMETER_FILE_KEY, username)
                     .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
                     .build();
         } catch (URISyntaxException e) {
@@ -90,7 +90,7 @@ public class StorageService {
         URI uri = null;
         try {
             uri = new URIBuilder(storageServiceConfig.getFileServicePath() + "/file")
-                    .addParameter(PARAMETER_USERNAME, username)
+                    .addParameter(PARAMETER_FILE_KEY, username)
                     .addParameter(PARAMETER_FILE_POSTFIX, filePostfix)
                     .build();
         } catch (URISyntaxException e) {
@@ -106,7 +106,7 @@ public class StorageService {
 
     public void processFile(String username, String filePostfix) {
         HashMap<String, String> values = new HashMap<>() {{
-            put(PARAMETER_USERNAME, username);
+            put(PARAMETER_FILE_KEY, username);
             put(PARAMETER_FILE_POSTFIX, filePostfix);
         }};
 

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StorageServiceDownloadResponse {
 
-    @JsonProperty("presigned_url")
-    private String presignedUrl;
+    @JsonProperty("signed_url")
+    private String signedUrl;
 
 }

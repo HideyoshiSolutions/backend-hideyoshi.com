@@ -40,7 +40,7 @@ public class StorageServiceTest {
 
         // When
         try {
-            String responseString = "{\"presigned_url\":\"https://test.com\", \"file_key\":\"test\"}";
+            String responseString = "{\"signed_url\":\"https://test.com\", \"expires_in\":\"3600\"}";
             Mockito.doReturn(responseString).when(storageService).postRequest(Mockito.any(), Mockito.any());
         } catch (IOException e) {
             assert false;
@@ -85,7 +85,7 @@ public class StorageServiceTest {
 
         // When
         try {
-            String responseString = "{\"presigned_url\":\"http://test.com\"}";
+            String responseString = "{\"signed_url\":\"http://test.com\"}";
             Mockito.doReturn(responseString).when(storageService).getRequest(Mockito.any());
         } catch (IOException e) {
             assert false;
