@@ -15,41 +15,13 @@ import java.util.HashMap;
 @Getter
 public enum UserResourceGuardEnum {
 
-    USER("user") {
-        @Override
-        public Boolean hasAccess(
-                UserService userService,
-                HttpServletRequest request) {
-            return UserResourceGuardEnum.justUser(userService, request);
-        }
-    },
+    USER("user"),
 
-    SAME_USER("same_user") {
-        @Override
-        public Boolean hasAccess(
-                UserService userService,
-                HttpServletRequest request) {
-            return UserResourceGuardEnum.sameUser(userService, request);
-        }
-    },
+    SAME_USER("same_user"),
 
-    ADMIN_USER("admin_user") {
-        @Override
-        public Boolean hasAccess(
-                UserService userService,
-                HttpServletRequest request) {
-            return UserResourceGuardEnum.adminUser(userService, request);
-        }
-    },
+    ADMIN_USER("admin_user"),
 
-    OPEN("open") {
-        @Override
-        public Boolean hasAccess(
-                UserService userService,
-                HttpServletRequest request) {
-            return openAccess(userService, request);
-        }
-    };
+    OPEN("open");
 
     private final String accessType;
 
@@ -65,37 +37,5 @@ public enum UserResourceGuardEnum {
         }
         throw new IllegalArgumentException("Argument not valid.");
     }
-
-    private static boolean justUser(UserService userService, HttpServletRequest request) {
-        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        return userLogged.getAuthorities().contains(new SimpleGrantedAuthority(Role.USER.getDescription()));
-    }
-
-    private static boolean sameUser(UserService userService, HttpServletRequest request) {
-        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Object requestPathVariable = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String, String> pathVariable = objectMapper.convertValue(requestPathVariable, HashMap.class);
-        UserDTO userInfo = userService.getUser(Long.parseLong(pathVariable.get("id")));
-
-        return userLogged.getUsername().equals(userInfo.getUsername());
-
-    }
-
-    private static boolean adminUser(UserService userService, HttpServletRequest request) {
-        UserDTO userLogged = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userLogged.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.getDescription()));
-    }
-
-    private static Boolean openAccess(UserService userService, HttpServletRequest request) {
-        return true;
-    }
-
-    public abstract Boolean hasAccess(
-            UserService userService,
-            HttpServletRequest request);
 
 }
