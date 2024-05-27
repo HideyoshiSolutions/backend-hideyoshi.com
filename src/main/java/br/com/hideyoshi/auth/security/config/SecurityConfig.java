@@ -7,7 +7,7 @@ import br.com.hideyoshi.auth.security.oauth2.repository.OAuthRequestRepository;
 import br.com.hideyoshi.auth.security.service.AuthService;
 import br.com.hideyoshi.auth.service.UserService;
 import br.com.hideyoshi.auth.util.exception.AuthenticationInvalidExceptionDetails;
-import br.com.hideyoshi.auth.util.guard.UserResourceHandler;
+import br.com.hideyoshi.auth.util.guard.UserResourceEndpointManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -44,7 +44,7 @@ public class SecurityConfig {
     private final AuthService authService;
     private final UserService userService;
     private final OAuthRequestRepository oAuthRequestRepository;
-    private final UserResourceHandler userResourceHandler;
+    private final UserResourceEndpointManager userResourceEndpointManager;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -86,11 +86,11 @@ public class SecurityConfig {
             UsernamePasswordAuthenticationFilter.class
         );
 
-        for (String endpoint : this.userResourceHandler.getOpenPaths()) {
+        for (String endpoint : this.userResourceEndpointManager.getOpenPaths()) {
             http.authorizeRequests().antMatchers(endpoint).permitAll();
         }
 
-        for (String endpoint : this.userResourceHandler.getGuardedPaths()) {
+        for (String endpoint : this.userResourceEndpointManager.getGuardedPaths()) {
             http.authorizeRequests().antMatchers(endpoint).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
         }
 
