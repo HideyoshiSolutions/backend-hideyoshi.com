@@ -137,6 +137,8 @@ public class AuthService {
 
         try {
             user = this.userService.getUser(oAuth2User.getUsername());
+            user.setName(oAuth2User.getName());
+            user.setProfilePictureUrl(oAuth2User.getProfilePictureUrl());
         } catch (BadRequestException e) {
             user = UserDTO.builder()
                     .name(oAuth2User.getName())
