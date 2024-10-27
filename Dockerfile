@@ -14,4 +14,4 @@ FROM ibm-semeru-runtimes:open-17-jdk-focal
 COPY --from=build /home/app/target/*.jar app.jar
 COPY src/main/resources/* credentials/
 
-ENTRYPOINT ["java","-XX:TieredStopAtLevel=1","-Xverify:none","-Xmx256m","-jar","/app.jar"]
+ENTRYPOINT ["java","-XX:TieredStopAtLevel=1","-Xverify:none","-jar","/app.jar"]
