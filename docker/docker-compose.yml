@@ -3,8 +3,7 @@ services:
     postgres:
         image: postgres:14.13
         container_name: postgres
-        ports:
-            - "5432:5432"
+        network_mode: host
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
@@ -15,13 +14,40 @@ services:
     redis:
         image: bitnami/redis
         container_name: redis
+        network_mode: host
         environment:
             REDIS_PASSWORD: redis
-        ports:
-            - "6379:6379"
         volumes:
             - redis:/data
+
+    minio:
+        image: bitnami/minio
+        container_name: minio
+        environment:
+            MINIO_ROOT_USER: minio
+            MINIO_ROOT_PASSWORD: minio123
+            MINIO_DEFAULT_BUCKETS: default
+        network_mode: host
+        volumes:
+            - minio:/bitnami/minio/data
+
+    storage_service:
+        image: yoshiunfriendly/storage-hideyoshi.com:latest
+        container_name: storage_service
+        network_mode: host
+        environment:
+            REDIS_HOST: 127.0.0.1
+            REDIS_PORT: 6379
+            REDIS_PASSWORD: redis
+            STORAGE_TYPE: s3
+            AWS_ENDPOINT_URL: http://127.0.0.1:9000
+            AWS_ACCESS_KEY_ID: minio
+            AWS_SECRET_ACCESS_KEY: minio123
+            AWS_REGION_NAME: sa-east-1
+            AWS_BUCKET_NAME: default
+            VIRUS_CHECKER_TYPE: none
 
 volumes:
     postgres:
     redis:
+    minio:
