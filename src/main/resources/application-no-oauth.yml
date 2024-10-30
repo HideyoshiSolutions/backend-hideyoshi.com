@@ -1,0 +1,49 @@
+br:
+  com:
+    hideyoshi:
+      frontendPath: ${FRONTEND_PATH}
+      tokenSecret: ${TOKEN_SECRET}
+      accessTokenDuration: ${ACCESS_TOKEN_DURATION}
+      refreshTokenDuration: ${REFRESH_TOKEN_DURATION}
+      defaultUser:
+        fullName: ${DEFAULT_USER_FULLNAME}
+        email: ${DEFAULT_USER_EMAIL}
+        username: ${DEFAULT_USER_USERNAME}
+        password: ${DEFAULT_USER_PASSWORD}
+
+      microservice:
+        storageServicePath: ${STORAGE_SERVICE_PATH}
+
+
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+  port: ${PORT}
+
+spring:
+
+  datasource:
+    url: jdbc:${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  session:
+    store:
+      type: redis
+      persistent: true
+
+  redis:
+    host: ${REDIS_URL}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
