@@ -1,0 +1,35 @@
+# Exclude build output and IDE files to reduce Docker build context size
+target
+**/target
+
+# Git and local metadata
+.git
+.gitignore
+.DS_Store
+
+# Local editor / IDE
+.idea
+.vscode
+*.iml
+*.sublime-*
+
+# Build artifacts and temporary files
+*.class
+*.log
+tmp/
+build/
+
+# Swap / editor backups
+*.swp
+
+# Internal Docker
+.dockerignore
+docker/
+
+# Project specific ignores
+README.md
+LICENSE
+
+# CI Files
+.github/
+.k8s/

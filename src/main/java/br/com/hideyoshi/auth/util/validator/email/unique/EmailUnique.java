@@ -19,7 +19,7 @@ public class EmailUnique implements ConstraintValidator<UniqueEmail, String> {
     @Override
     public boolean isValid(String email, ConstraintValidatorContext constraintValidatorContext) {
 
-        AtomicReference<Boolean> emailValid = new AtomicReference();
+        AtomicReference<Boolean> emailValid = new AtomicReference<>();
         this.userRepository.findByEmail(email).ifPresentOrElse(
                 (value) -> {
                     emailValid.set(false);

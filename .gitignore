@@ -32,7 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
-src/main/resources/application-devel.yml
+src/main/resources/application*.yml
+!src/main/resources/application.yml
+!src/main/resources/application-no-oauth.yml
 
 ### Maven ###
 target/
