@@ -1,0 +1,5 @@
+creation_rules:
+    - path_regex: ^secrets(\.enc)?\.yml$
+      encrypted_regex: '^(data|stringData)$'
+      pgp: >-
+          8C8D94A7639C87559B0F2F64B7E1F62F69798EB6

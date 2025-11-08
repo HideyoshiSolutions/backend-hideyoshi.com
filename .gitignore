@@ -48,3 +48,14 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+### Certs ###
+*.pem
+
+### Secrets and Envs ###
+.env*
+*.secret
+
+.k8s/*.yml
+!.k8s/*.template.yml
+!.k8s/*.enc.yml

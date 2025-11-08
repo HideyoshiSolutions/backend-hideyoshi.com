@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-deployment
+    namespace: ${KUBE_NAMESPACE}
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: backend
+    template:
+        metadata:
+            labels:
+                app: backend
+        spec:
+            nodeSelector:
+                ${WORKER_NODE_LABEL}
+            imagePullSecrets:
+                - name: ghcr-secret
+            containers:
+                - name: backend
+                  image: ${IMAGE_BASE}:${IMAGE_TAG}
+                  imagePullPolicy: Always
+                  resources:
+                      requests:
+                          memory: "256Mi"
+                          cpu: "250m"
+                      limits:
+                          memory: "256Mi"
+                          cpu: "1000m"
+                  ports:
+                      - containerPort: 8070
+                  readinessProbe:
+                      httpGet:
+                          path: /health
+                          port: 8070
+                      initialDelaySeconds: 60
+                  livenessProbe:
+                      httpGet:
+                          path: /health
+                          port: 8070
+                      initialDelaySeconds: 60
+                  envFrom:
+                      - configMapRef:
+                          name: backend-config
+                      - secretRef:
+                          name: backend-secret
+                  env:
+                      - name: PORT
+                        value: "8070"
+
+                      - name: REDIS_URL
+                        value: backend-redis-service
+
+                      - name: REDIS_PORT
+                        value: "6379"
+
+                      - name: POSTGRES_URL
+                        valueFrom:
+                            secretKeyRef:
+                                name: backend-postgres-cluster-app
+                                key: host
+
+                      - name: POSTGRES_DB
+                        valueFrom:
+                            secretKeyRef:
+                                name: backend-postgres-cluster-app
+                                key: dbname
+
+                      - name: DATABASE_URL
+                        value: "postgresql://$(POSTGRES_URL):5432/$(POSTGRES_DB)"
+
+                      - name: DATABASE_USERNAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: backend-postgres-cluster-app
+                                key: user
+
+                      - name: DATABASE_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: backend-postgres-cluster-app
+                                key: password
+
+                      - name: STORAGE_SERVICE_URL
+                        valueFrom:
+                            configMapKeyRef:
+                                name: backend-config
+                                key: STORAGE_SERVICE_INTERNAL_URL
+
+                      - name: STORAGE_SERVICE_PORT
+                        valueFrom:
+                            configMapKeyRef:
+                                name: backend-config
+                                key: STORAGE_SERVICE_PORT
+
+                      - name: STORAGE_SERVICE_PATH
+                        value: "http://$(STORAGE_SERVICE_URL):$(STORAGE_SERVICE_PORT)"
+
