@@ -2,6 +2,12 @@ name: ci
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: false
+        default: 'latest'
 
 jobs:
   build:
@@ -139,7 +145,7 @@ jobs:
       - name: Decrypt SOPS Secrets Test
         run: |
           cd .k8s
-          sops -d secrets.enc.yml secrets.yml
+          sops -d secrets.enc.yml > secrets.yml
 
       - name: Apply Kubernetes Manifests - Configuration
         run: cat .k8s/config.template.yml | envsubst | kubectl apply -f -
