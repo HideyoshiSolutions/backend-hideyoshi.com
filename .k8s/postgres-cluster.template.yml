@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+    name: backend-postgres-cluster
+    namespace: ${KUBE_NAMESPACE}
+spec:
+    instances: 3
+    primaryUpdateStrategy: unsupervised
+    imageName: ghcr.io/cloudnative-pg/postgresql:14.10-18
+
+    storage:
+        size: 5Gi
+
+    resources:
+        requests:
+            memory: "256Mi"
+            cpu: "200m"
+        limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+    affinity: {}

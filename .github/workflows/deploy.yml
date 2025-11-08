@@ -38,7 +38,7 @@ jobs:
 
   docker:
     needs: [ build, run-tests ]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -90,3 +90,76 @@ jobs:
             ${{ env.IMAGE_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [docker]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'main')
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'dev' }}
+      url: https://${{ vars.KUBE_DOMAIN }}
+    env:
+      # Kubernetes Specific
+      KUBE_NAMESPACE: ${{ vars.KUBE_NAMESPACE }}
+      KUBE_API_DOMAIN: ${{ vars.KUBE_API_DOMAIN }}
+      WORKER_NODE_LABEL: ${{ vars.WORKER_NODE_LABEL }}
+      # Application Specific
+      FRONTEND_PATH: ${{ vars.FRONTEND_PATH }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+
+      - name: Set Up Kubeconfig
+        uses: azure/k8s-set-context@v4
+        with:
+          kubeconfig: ${{ secrets.PORTFOLIO_KUBECONFIG }}
+
+      - name: Prepare Image Tag
+        run: |
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${GITHUB_REPOSITORY#*/}" | tr '[:upper:]' '[:lower:]')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          
+          IMAGE_BASE="ghcr.io/${OWNER}/${REPO}"
+          IMAGE_TAG="sha-${SHORT_SHA}"
+          
+          echo "IMAGE_BASE=${IMAGE_BASE}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Import SOPS GPG Key
+        run: |
+          echo "${{ secrets.PORTFOLIO_GPG_PRIVATE_KEY }}" | gpg --import
+
+      - name: Install SOPS
+        run: |
+          curl -L https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux.amd64 -o /usr/local/bin/sops
+          chmod +x /usr/local/bin/sops
+
+      - name: Decrypt SOPS Secrets Test
+        run: |
+          cd .k8s
+          sops -d secrets.enc.yml secrets.yml
+
+      - name: Apply Kubernetes Manifests - Configuration
+        run: cat .k8s/config.template.yml | envsubst | kubectl apply -f -
+
+      - name: Apply Kubernetes Manifests - Secrets
+        run: cat .k8s/secrets.yml | envsubst | kubectl apply -f -
+
+      - name: Apply Kubernetes Manifests - Postgres Cluster
+        run: cat .k8s/postgres-cluster.template.yml | envsubst | kubectl apply -f -
+
+      - name: Apply Kubernetes Manifests - Redis Cluster
+        run: cat .k8s/redis.template.yml | envsubst | kubectl apply -f -
+
+      - name: Apply Kubernetes Manifests - Deployment
+        run: |
+          cat .k8s/deployment.template.yml | envsubst | kubectl apply -f -
+          cat .k8s/deployment.yaml | envsubst | kubectl rollout status deployment/frontend-deployment -n ${KUBE_NAMESPACE} --timeout=120s
+
+      - name: Apply Kubernetes Manifests - Service
+        run: cat .k8s/service.template.yml | envsubst | kubectl apply -f -
+
+      - name: Apply Kubernetes Manifests - Ingress
+        run: cat .k8s/ingress.template.yml | envsubst | kubectl apply -f -

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ${KUBE_NAMESPACE}
+  name: backend-redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-redis
+  template:
+    metadata:
+      labels:
+        app: backend-redis
+    spec:
+      containers:
+        - name: redis
+          image: valkey/valkey:8.0.6-alpine
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "75m"
+            limits:
+              memory: "256Mi"
+              cpu: "256m"
+          ports:
+            - containerPort: 6379
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: REDIS_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${KUBE_NAMESPACE}
+  name: backend-redis-service
+spec:
+  selector:
+    app: backend-redis
+  ports:
+    - port: 6379
+  type: ClusterIP
