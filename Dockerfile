@@ -1,17 +1,24 @@
-#
-# Build stage
-#
 FROM maven:3.9.3-ibm-semeru-17-focal AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -Dmaven.test.skip -f /home/app/pom.xml clean package
+
+WORKDIR /home/app
+
+COPY pom.xml mvnw ./
+COPY .mvn/ .mvn/
+
+# Download dependencies into /root/.m2 (use BuildKit cache if available).
+# If BuildKit isn't enabled this still works as a normal mvn dependency:go-offline.
+RUN --mount=type=cache,target=/root/.m2 mvn -B -Dmaven.test.skip=true dependency:go-offline
+
+COPY src ./src
+RUN --mount=type=cache,target=/root/.m2 mvn -B -Dmaven.test.skip=true package
 
 #
 # Package stage
 #
 FROM ibm-semeru-runtimes:open-17-jdk-focal
+WORKDIR /app
 
-COPY --from=build /home/app/target/*.jar app.jar
-COPY src/main/resources/* credentials/
+# Copy final artifact
+COPY --from=build /home/app/target/*.jar ./app.jar
 
-ENTRYPOINT ["java","-XX:TieredStopAtLevel=1","-Xverify:none","-jar","/app.jar"]
+ENTRYPOINT ["java","-XX:TieredStopAtLevel=1","-Xverify:none","-jar","/app/app.jar"]
