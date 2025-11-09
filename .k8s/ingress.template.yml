@@ -4,6 +4,7 @@ metadata:
     name: backend-ingress
     namespace: ${KUBE_NAMESPACE}
     annotations:
+        cert-manager.io/cluster-issuer: cluster-certificate-issuer
         kubernetes.io/ingress.class: nginx
         nginx.ingress.kubernetes.io/use-regex: "true"
         nginx.ingress.kubernetes.io/rewrite-target: /
